@@ -3,8 +3,8 @@ DBA 1337_TECH, AUSTIN TEXAS © MAY 2021
 Proof of Concept code, No liabilities or warranties expressed or implied.
 """
 
-from _1337_Tech_Blog.organizer.models import SecureNote
-from _1337_Tech_Blog.organizer.models import Tag, Tasking, Librarian
+from _FortressOfSolitude.organizer.models import SecureNote
+from _FortressOfSolitude.organizer.models import Tag, Tasking, Librarian
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse

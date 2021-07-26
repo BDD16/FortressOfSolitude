@@ -4,10 +4,10 @@ Proof of Concept code, No liabilities or warranties expressed or implied.
 """
 
 
-from _1337_Tech_Blog.NeutrinoKey.decorators import custom_login_required
-from _1337_Tech_Blog.core.utils import UpdateView
-from _1337_Tech_Blog.organizer.models import (ImageFile, MusicFile, MiscFile, Gor_El)
-from _1337_Tech_Blog.superhero.decorators import require_authenticated_permission
+from _FortressOfSolitude.NeutrinoKey.decorators import custom_login_required
+from _FortressOfSolitude.core.utils import UpdateView
+from _FortressOfSolitude.organizer.models import (ImageFile, MusicFile, MiscFile, Gor_El)
+from _FortressOfSolitude.superhero.decorators import require_authenticated_permission
 from django.contrib.auth import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required

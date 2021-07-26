@@ -3,7 +3,7 @@ DBA 1337_TECH, AUSTIN TEXAS © MAY 2021
 Proof of Concept code, No liabilities or warranties expressed or implied.
 """
 
-from _1337_Tech_Blog.core.utils import UpdateView
+from _FortressOfSolitude.core.utils import UpdateView
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import (ArchiveIndexView, CreateView, DeleteView, DetailView, MonthArchiveView,

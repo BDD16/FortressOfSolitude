@@ -7,9 +7,9 @@ import os
 from base64 import (b64encode, b64decode)
 from datetime import datetime
 
-import _1337_Tech_Blog.settings as settings
-from _1337_Tech_Blog.NeutrinoKey.cryptoutils import CryptoTools
-from _1337_Tech_Blog.NeutrinoKey.models import DEK, KEK, NeutronMatterCollector, NeutronCore
+import _FortressOfSolitude.settings as settings
+from _FortressOfSolitude.NeutrinoKey.cryptoutils import CryptoTools
+from _FortressOfSolitude.NeutrinoKey.models import DEK, KEK, NeutronMatterCollector, NeutronCore
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from django.db import models

@@ -24,12 +24,12 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.urls import path
-from _1337_Tech_Blog.Blog.views import greeting
-from _1337_Tech_Blog.organizer.views import homepage, tag_detail
-from _1337_Tech_Blog.organizer import urls as organizer_urls
-from _1337_Tech_Blog.Blog import urls as blog_urls
-from _1337_Tech_Blog.Blog.views import PostList
-from _1337_Tech_Blog.superhero import urls as superhero_urls
+from _FortressOfSolitude.Blog.views import greeting
+from _FortressOfSolitude.organizer.views import homepage, tag_detail
+from _FortressOfSolitude.organizer import urls as organizer_urls
+from _FortressOfSolitude.Blog import urls as blog_urls
+from _FortressOfSolitude.Blog.views import PostList
+from _FortressOfSolitude.superhero import urls as superhero_urls
 
 
 urlpatterns = [
