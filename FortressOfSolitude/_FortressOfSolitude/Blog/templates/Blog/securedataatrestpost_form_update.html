@@ -1,0 +1,10 @@
+{% extends parent_template|default:"Blog/base_blog.html" %}
+{% load display_form %}
+
+{% block title %}
+{{ block.super }} - Update SecureNote
+{% endblock %}
+
+{% block content %}
+  {% form post.get_update_url 'Update SecureNote' %}
+{% endblock %}

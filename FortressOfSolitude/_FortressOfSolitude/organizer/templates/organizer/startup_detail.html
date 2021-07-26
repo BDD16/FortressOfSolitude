@@ -1,0 +1,43 @@
+{% extends parent_template|default:"organizer/base.html" %}
+
+{% block title %}
+{{ block.super }}  - {{ Startup.name|title }}
+{% endblock %}
+
+{% block content %}
+
+
+<h2> {{Startup.name}}<!-- name of Startup --> </h2>
+{% if Startup.blog_posts.all %}
+    <section>
+        <h3>Startups</h3>
+        <u1>
+            <!-- list of startups related to Startup-->
+            {% for startup in Startup.blog_posts.all %}
+            <li><a href="{{ startup.get_absolute_url }}">
+                {{startup.name}}
+            </a></li>
+            {% endfor %}
+        </u1>
+    </section>
+{% else %}
+    <p>This Startup is not related to any startups.</p>
+{% endif %}
+  {% if Startup.blog_posts.all %}
+<section>
+    <h3>Blog Posts</h3>
+    <u1>
+        <!-- list of posts related to Startup -->
+        {% for post in Startup.blog_posts.all %}
+        <li><a href="{{ post.get_absolute_url }}">
+            {{post.title|title}}
+            </a></li>
+        {% endfor %}
+    </u1>
+</section>
+{% endif %}
+{% if not Startup.startup_set.all and not Startup.blog_posts.all %}
+    <p>This Startup is not related to any content.</p>
+{% endif %}
+
+{%endblock %}

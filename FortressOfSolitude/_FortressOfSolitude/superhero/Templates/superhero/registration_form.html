@@ -1,0 +1,32 @@
+{% extends parent_template|default:"superhero/base.html" %}
+
+{% block title %}
+{{ block.super }} - Create Superhero
+{% endblock %}
+
+{% block content %}
+
+    <form action="{% url 'superhero:register_create' %}"
+          method="post">
+        {% csrf_token %}
+        <h2> Register a SuperHero<!-- name of tag --> </h2>
+        <p>
+            <label for="id_email">Email:</label>
+            <input id="id_email" maxlength="32"
+                   name="email" type="text" />
+            <span class="helptext">
+                Email Address of SuperHero
+            </span>
+        </p>
+
+        <p>
+            <label for="id_pwd">Password:</label>
+            <input id="id_pwd" maxlength="32"
+                   name="pwd" type="password" />
+            <span class="helptext">
+                Password is a minimum of 8 characters
+            </span>
+        </p>
+        <button class="CreateButton" type="submit"> Create New User </button>
+    </form>
+{% endblock %}

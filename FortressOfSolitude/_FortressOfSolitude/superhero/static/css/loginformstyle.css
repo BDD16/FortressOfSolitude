@@ -1,0 +1,326 @@
+
+
+.SanAntone h1, .SanAntone h2 a {
+    color: #C25100;
+    font-family: 'Monaco';
+}
+
+.SanAntone p {
+  align-items: center;
+  color: #C25100;
+  font-weight: bold;
+  font-family: 'Oswald', sans-serif;
+}
+
+.SanAntone p label {
+  font-family: 'Oswald', cursive;
+}
+
+.SanAntone p input {
+  border-radius: 10px;
+}
+
+.SanAntone button {
+  color: #008CBA;
+  border-radius:5px;
+  font-size: 16px;
+  font-family: 'Righteous', sans-serif;
+}
+
+.DeleteButton {
+  background-color: #CC0000;
+  font-weight: bold;
+  font-family: 'Righteous', sans-serif;
+
+}
+
+.CreateButton {
+  background-color: #4CAF50;
+  color: white;
+  font-size: 26px;
+  font-weight: bold;
+  font-family: 'Righteous', sans-serif;
+  border-radius: 5px;
+}
+
+.UploadButton {
+  background-color: #4CAF50;
+  color: white;
+  font-weight: bold;
+  font-size: 26px;
+  font-family: 'Righteous', sans-serif;
+}
+
+.LogoutButton {
+  background-color: #CC0000;
+  color: #0060AA;
+  font-weight: bold;
+  font-family: 'Righteous', sans-serif;
+  font-size: 16px;
+  border-radius: 3px;
+}
+
+.LoginButton {
+  color: #0060AA;
+  font-weight: bold;
+  font-family: 'Righteous', sans-serif;
+  font-size: 16px;
+  border-radius: 3px;
+
+}
+
+.row div p {
+  font-family: bold;
+  font-family: 'Righteous', sans-serif;
+}
+
+.fontz a h1 {
+  color: #FFFFFF;
+  font-weight: bold;
+  font-family: 'Righteous', sans-serif;
+}
+
+.bottomFooter p {
+  color: #000000;
+  font-weight: bold;
+  font-family: 'Righteous', sans-serif;
+}
+
+.writing {
+  color: #E8F836;
+  font-weight: bold;
+  font-family: 'Righteous', sans-serif;
+}
+
+.writing article div div p {
+  font-family: 'Audiowide', cursive;
+  color: white;
+}
+
+.writing:before{
+  color: #E8F836;
+  font-weight: bold;
+  font-family: 'Righteous', sans-serif;
+}
+
+
+.logout {
+  color: #FFED10;
+}
+
+.notes {
+  font-family: 'Oswald', sans-serif;
+  color: #010101;
+}
+
+.CuttingEdge {
+    z-index: -15;
+    height: 100%;
+    background-color: #0060AA;
+    margin:0;
+    position: relative;
+}
+
+.CuttingEdge:before {
+    z-index: -15;
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    border-top: 800px solid #69BB01;
+    border-left: 500px solid #0060AA;
+    width: 0;
+}
+
+.Logoutbtn {
+  background-color: #cc0000;
+  padding: 0px;
+  font-size: 16px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.LogoutDropDown {
+  position: relative;
+  display: inline-block;
+  background-image: url('/static/img/Kryptonite_Glow.png') width 121px height 75px;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.LogoutDropDown-content {
+  display: none;
+  position: absolute;
+  bottom: 10px;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.LogoutDropDown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.LogoutDropDown-content a:hover {background-color: #f1f1f1}
+
+/* Show the dropdown menu on hover */
+.LogoutDropDown:hover .LogoutDropDown-content {
+  display: block;
+  border-radius: 15px;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.LogoutDropDown:hover .Logoutbtn {
+  background-color: #3e8e41;
+}
+
+
+.GreenArrow {
+  color: #69BB01;
+}
+
+.OrangeThing {
+  color: #ff9933
+}
+
+.RedSkull {
+  color: #cc0000
+}
+
+.CreateLink {
+  color: white;
+}
+
+.NightVision_ToolTip:hover {
+  background-color: #070607;
+  color: #267A26;
+  content: attr(data-title);
+  position: absolute;
+  bottom: -26px;
+  display: inline-block;
+  padding: 3px 6px;
+  border-radius: 2px;
+  background: #000;
+  font-size: 12px;
+  font-family: sans-serif;
+  white-space: nowrap;
+}
+
+.NightVision_ToolTip:hover::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 8px;
+  display: inline-block;
+  color: #fff;
+  border: 8px solid transparent;
+  border-bottom: 8px solid #000;
+}
+
+.NightVision_tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+.NightVision_tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #070607;
+  color: #267A26;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.NightVision_tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+[data-title] {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+[data-title]:hover::before {
+  z-index: 1;
+  background-color: #070607;
+  color: #66bf2f;
+  content: attr(data-title);
+  position: absolute;
+  bottom: -14px;
+  display: inline-block;
+  padding: 3px 6px;
+  border-radius: 2px;
+  background: #000;
+  font-size: 12px;
+  font-family: sans-serif;
+  white-space: nowrap;
+}
+[data-title]:hover::after {
+  z-index: 1;
+  content: '';
+  position: absolute;
+  bottom: 1px;
+  left: 8px;
+  display: inline-block;
+  color: #fff;
+  border: 8px solid transparent;
+  border-bottom: 8px solid #000;
+}
+
+.comicBook {
+	padding: 15px 15px 0 15px;
+	margin: -20px 5px 5px -5px;
+  background-color: steelblue;
+  position: relative;
+  z-index: -2;
+}
+
+.shelfurl:hover span .comicBook {
+  background-color: maroon;
+}
+
+.shelf {
+  position:relative;
+	border-bottom: 30px solid #a5a5a5;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  width: 55%;
+	top: -15px;
+	z-index: -10;
+}
+
+.centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.comicBookTitle {
+  position: absolute;
+  word-wrap: break-word;
+  top: 50%;
+  left: 59%;
+  font-size: calc(15px*.80901);
+  width: 50%;
+  color: white;
+  margin:  0px 0px 0px -50%;
+  align-content: center;
+  z-index: -1;
+
+}

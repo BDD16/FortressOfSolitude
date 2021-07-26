@@ -1,0 +1,20 @@
+﻿{% extends parent_template|default:"Blog/base_blog.html" %}
+
+{% block title %}
+{{ block.super }} - Create SecureNote
+{% endblock %}
+
+{% block content %}
+  <div>
+    <div>
+      <form
+          action="{% url 'blog_securepost_create' %}"
+          method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">
+          Create SecureNote</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

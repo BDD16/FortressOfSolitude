@@ -1,0 +1,26 @@
+{% extends parent_template|default:"organizer/base.html" %}
+
+{% block title %}
+{{ block.super }}  - {{ startup.name|title }}
+{% endblock %}
+
+{% block content %}
+
+<h2> TagList<!-- name of tag --> </h2>
+    <div class="col-lg-8 d-lg-block">
+
+        <a href="{% url 'organizer_startup_create' %}">Create a New Startup</a>
+    </div>
+        <ul>
+            <!-- list of startups related to tag-->
+
+                {% for startup in startup_list %}
+                <li><a href="{{ startup.get_absolute_url }}">
+                    {{ startup.name|title}}
+                </a></li>
+                {% empty %}
+                <li><em>There are currently no Startup availiable</em></li>
+                {% endfor %}
+        </ul>
+
+{% endblock %}

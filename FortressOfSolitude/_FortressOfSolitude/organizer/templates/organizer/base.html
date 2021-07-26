@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>
+        {% block title %}
+        Startup Organizer
+        {% endblock %}
+    </title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrom=1" />
+    <meta name=" = viewport" content="width=device-width, iniital-scale=1" />
+    <style>
+        nav {
+            font-size: 100%;
+            position: fixed;
+            top: 0;
+            width: 100%; 
+            background:  #CC0000 !important;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            border: 4px solid darkred;
+            border-radius: 4px;
+        }
+        nav a {
+            float: left;
+            text-decoration: none;
+            padding: 14px 23px;
+        }
+
+            nav a:hover {
+                background-color: #820000;
+                
+            }
+
+       ul.stayClassySanDiego {
+           list-style-type: none;
+            font-size: 100%;
+            position: fixed;
+            right: 0;
+            height: 100%; 
+            width: 121px;
+            background:  #276CE8 !important;
+            overflow: hidden;
+            margin: 85px 0px 0px 0px;
+            padding: 0px;
+            border: 3px solid #75A1F1;
+            border-radius: 5px;
+            
+            }
+            ul.stayClassySanDiego li a {
+                    float: left;
+                    text-decoration: none;
+                    padding: 5px 5px;
+                    
+                    
+                }
+             ul.stayClassySanDiego li a:hover {
+                    background-color: #194595;
+                    width: 100%;
+                    border-radius: 7px;
+                }
+
+        footer.bottomFooter {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: yellow;
+            border: 4px solid #CCCC00;
+            border-radius: 5px;
+
+        }
+
+    </style>
+</head>
+<body style="background-color: #A7C3F6;margin:0;"> <!-- chartreuse -->
+        <div class="container" align="center" >
+             <div class="container" align="left">
+                <ul class="stayClassySanDiego">
+                    <li><a href="{% url 'organizer_tag_create' %}"><h><font face="verdana" style="font-weight:bold;" color="Black">Tagging</font></h></a></li>
+                    <li><a href="{% url 'organizer_tasking_create' %}"><h><font face="verdana" style="font-weight:bold;" color="Black">Tasking</font></h></a></li>
+                </ul>
+            </div>
+            <div class="container navbar-right" >
+                <nav>
+                        <a class="navbar-item" text-align="center">
+                            <img src="{% static "img/fortressOfSolitude.png" %}" alt="Do_You_Have_The_Strength?" width="121" height="75" />
+                        </a>
+                        <a class="navbar-item" text-align="center" href="{% url 'organizer_upload_create' %}">
+                           <h1 align="center"><font color="white">Fortress of Solitude</font></h1>
+                        </a>
+                        
+                       <a href="{% url 'organizer_tag_list' %}"><h1><font color="white">    TagList   </font> </h1></a>
+                        
+                        <a href="{% url 'organizer_tasking_list' %}"><h1><font color="white">   TaskList   </font> </h1></a>
+                        </a>
+                </nav>
+            </div>
+           
+      </div>
+    
+    <div  style="padding:20px;margin-top:30px;"></div>
+    <main>
+        {% block content %}
+        This is default content!
+        {% endblock %}
+    </main>
+
+    <div class="status row">
+      <div class="offset-by-eight four columns">
+        <ul class="inline" style="list-style-type: none;">
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'dj-auth:logout' %}?
+                 next={{ request.path }}">
+            Log Out</a></li>
+            {% else %}
+            <li><a href="{% url 'dj-auth:login' %}?
+                   next={{ request.path }}">
+              Log In</a></li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+    <div><!-- container-->
+        <footer class="bottomFooter" >
+            <p align="center">
+                &copy; 2019
+                <a href="TBD.com"> LEET_TECH</a>
+            </p>
+        </footer>
+    </div>
+    
+</body>
+</html>

@@ -1,0 +1,38 @@
+﻿{% extends parent_template|default:"organizer/base.html" %}
+{% load staticfiles %}
+
+{% block title %}
+{{ block.super }}  - {{ imagefile.name|title }}
+{% endblock %}
+
+{% block content %}
+
+<h2> Download List<!-- name of download List --> </h2>
+    <div class="col-lg-8 d-lg-block">
+
+    </div>
+        <ul>
+            <!-- list of startups related to tag-->
+            <div class="row">
+                {% for file in imagefile_list %}
+
+                {% if forloop.counter|divisibleby:4 %}
+                <div class="col-xs-12 shelf" style="column-fill:balance;"></div>
+                {% endif %}
+                    <decrypt>
+                        <a class="shelfurl" style="position:relative;width:100%"href="media/photos/{{ file.id }}">
+                                <span data-title="{{ file|title }}">
+                                <img src="{% static 'img/NuclearAdjusted.png' %}" width="100" height="150" style="background-color:steelblue;position:relative;" class="img-responsive comicBook" alt="" />
+                                <h2 class="comicBookTitle">{{ file|title}}</h2>
+                                </span>
+                        </a>
+                    </decrypt>
+               
+                
+                {% empty %}
+                <li><em>There are currently no Downloads availiable</em></li>
+                {% endfor %}
+                <div class="col-xs-12 shelf" style="column-fill:balance;"></div>
+            </div>
+        </ul>
+{% endblock %}

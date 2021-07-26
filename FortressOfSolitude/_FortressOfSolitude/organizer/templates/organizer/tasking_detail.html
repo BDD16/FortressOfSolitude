@@ -1,0 +1,72 @@
+﻿{% extends parent_template|default:"organizer/base.html" %}
+
+{% block title %}
+{{ block.super }}  - {{ tasking.name|title }}
+{% endblock %}
+
+{% block content %}
+
+
+<h2> {{tasking.name}}<!-- name of tag --> </h2>
+{% if tasking.description %}
+    <section>
+        <h3>Description</h3>
+        <u1>
+            <!-- list of startups related to tag-->
+
+            <p>
+                {{tasking.description}}
+            </p>
+        </u1>
+    </section>
+{% else %}
+    <p>This tasking is not related to any descriptions.</p>
+{% endif %}
+  {% if tasking.asignee %}
+<section>
+    <h3>Asignee</h3>
+    <u1>
+      {% if perms.organizer.add_tag %}
+        <li>
+          <a
+              href="{{ tag.get_update_url }}"
+              class="button">
+            Edit Tag</a></li>
+        {% endif %}
+        <!-- list of posts related to tag -->
+        <li><a href="{{ theMan}}">
+            {{tasking.asignee|title}}
+            </a></li>
+
+    </u1>
+</section>
+{% endif %}
+{% if not tasking.asignee and not tasking.name %}
+    <p>This tag is not related to any content.</p>
+{% endif %}
+  {% if tasking.project_codename %}
+<section>
+    <h3>Codename</h3>
+    <u1 style="list-style-type: none;">
+        <!-- list of posts related to tag -->
+        <h4>{{tasking.project_codename|title}}</h4>
+
+    </u1>
+</section>
+{% else %}
+    <p>Codename is Classified</p>
+{% endif %}
+  {% if tasking.assigned_date %}
+<section>
+    <h3>Date Task Assigned</h3>
+    <u1 style="list-style-type: none;">
+        <!-- list of posts related to tag -->
+        <h4>{{tasking.assigned_date|title}}</h4>
+
+    </u1>
+</section>
+{% else %}
+    <p>No Assigned Date, the Universe's Space Fabric has torn!</p>
+{% endif %}
+
+{%endblock %}

@@ -1,0 +1,14 @@
+{% extends parent_template|default:"superhero/base_superhero.html" %}
+
+{% block title %}
+{{block.super}} - Logged Out
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+      <div class="offset-by-two eight columns" align="center">
+        <p> You've successfully logged out. </p>
+          {% include "superhero/login_form.html" with login_button='Log Back In' %}
+      </div>
+    </div>
+{% endblock %}

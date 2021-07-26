@@ -1,0 +1,10 @@
+{% extends parent_template|default:"Blog/base_blog.html" %}
+{% load display_form %}
+
+{% block title %}
+{{ block.super }} - Delete SecureNote Post
+{% endblock %}
+
+{% block content %}
+  {% delete_form post.get_delete_url %}
+{% endblock %}

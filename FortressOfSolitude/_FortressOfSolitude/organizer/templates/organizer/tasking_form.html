@@ -1,0 +1,62 @@
+﻿{% extends parent_template|default:"organizer/base.html" %}
+
+{% block title %}
+{{ block.super }} - Create Task
+{% endblock %}
+
+{% block content %}
+
+{% if perms.organizer.add_tasking %}
+    <h2> Create Task<!-- name of tag --> </h2>
+
+    <form action="{% url 'organizer_tasking_create' %}"
+          method="post">
+        {% csrf_token %}
+        <p>
+            <label for="id_name">Name:</label>
+            <input id="id_name" maxlength="32"
+                   name="name" type="text" />
+            <span class="helptext">
+                Name Field
+            </span>
+        </p>
+        <p>
+            <label for="id_slug">Slug:</label>
+            <input id="id_slug" maxlength="32" name="slug" type="text" />
+            <span class="helptext">Slug Field</span>
+        </p>
+
+        <p>
+            <label for="id_asignee">Asignee:</label>
+            <input id="id_asignee" maxlength="16"
+                   name="asignee" type="text" />
+            <span class="helptext">
+               Asignee Field
+            </span>
+        </p>
+         <p>
+            <label for="id_project_codename">Codename:</label>
+            <input id="id_project_codename" maxlength="16"
+                   name="project_codename" type="text" />
+            <span class="helptext">
+               Codename
+            </span>
+        </p>
+        <p>
+            <label for="id_description">Description:</label>
+            <textarea cols="35" rows="8" maxlength="128" name="description" type="text" ></textarea>
+            <span class="helptext">Description Field</span>
+        </p>
+
+        <p>
+            <label for="id_assigned_date">Assigned Date:</label>
+            <input id="id_assigned_date" name="assigned_date" type="datetime-local" value="{% now 'Y-m-d h:i:s' %}" />
+            
+            <span class="helptext">A label for URL config</span>
+        </p>
+        <button type="submit"> Create Task </button>
+    </form>
+{% else %}
+<h2>YOU DON't have permissions</h2>
+{% endif %}
+{% endblock %}

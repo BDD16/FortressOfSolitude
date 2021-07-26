@@ -1,0 +1,12 @@
+﻿
+{% block content %}
+<form enctype="multipart/form-data"
+      method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">
+        Upload
+    </button>
+</form>
+
+{% endblock %}

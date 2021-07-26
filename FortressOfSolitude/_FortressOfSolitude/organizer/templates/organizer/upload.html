@@ -1,0 +1,13 @@
+﻿{%extends parent_template|default:"organizer/base.html" %}
+
+{% block title %}
+{{ block.super }} - Upload
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div align="center" class="offset-by-two five columns">
+    {% include "organizer/upload_form.html" %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends parent_template|default:"organizer/base.html" %}
+{% load display_form %}
+
+{% block title %}
+{{ block.super }} - Update Tasking
+{% endblock %}
+
+{% block content %}
+  {% form tasking.get_update_url 'Update Tasking' %}
+{% endblock %}
