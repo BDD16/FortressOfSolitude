@@ -6,6 +6,8 @@ Proof of Concept code, No liabilities or warranties expressed or implied.
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.db import models
+
 # Create your models here.
 from datetime import date
 
@@ -13,9 +15,9 @@ from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser, BaseUserManager,
     PermissionsMixin)
+from django.urls import reverse
 from django.db import models
 from django.db.models import QuerySet
-from django.urls import reverse
 
 
 class ProfileManager(models.Manager):

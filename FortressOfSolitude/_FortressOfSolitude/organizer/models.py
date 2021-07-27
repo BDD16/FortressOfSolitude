@@ -23,29 +23,27 @@ musicFS = FileSystemStorage(location=settings.STATIC_ROOT + '/media/music/')
 photoFS = FileSystemStorage(location=settings.STATIC_ROOT + '/media/photos/')
 videoFS = FileSystemStorage(location=settings.STATIC_ROOT + '/media/video/')
 otherFS = FileSystemStorage(location=settings.STATIC_ROOT + '/media/otherfiles/')
+
+
 # End of Constants
 
-'''
-Tasking Manager is a models.Manager class extension that is used to retrieving the correct Tasking model type
-no inputs
-'''
-
-
 class TaskingManager(models.Manager):
+    """
+    Tasking Manager is a models.Manager class extension that is used to retrieving the correct Tasking model type
+    no inputs
+    """
 
     def get_by_natural_key(self, slug):
         return self.get(slug=slug)
 
 
-'''
-Librarian is a models.Manager class extension that includes a NeutronMatterCollector object, NeutronCore object, and CryptoTools object. The Librarian
-is a helper class that does the encrypting used for decompartmentalizing the roles of encryption and decryption to be seperated logically by classes.
-Use _encrypt_data to encrypt then store the appropriate model into the "fortressvault" database.  furthermore the Librarian is responsible for securing,
-then organizing data at rest.
-'''
-
-
 class Librarian(models.Manager):
+    """
+    Librarian is a models.Manager class extension that includes a NeutronMatterCollector object, NeutronCore object, and CryptoTools object. The Librarian
+    is a helper class that does the encrypting used for decompartmentalizing the roles of encryption and decryption to be seperated logically by classes.
+    Use _encrypt_data to encrypt then store the appropriate model into the "fortressvault" database.  furthermore the Librarian is responsible for securing,
+    then organizing data at rest.
+    """
     crypt = CryptoTools()
 
     def get_queryset(self):
@@ -227,48 +225,54 @@ class Gor_El(models.Manager):
             data_dek = f.data_dek
 
             # We've got the dek and kek attached to the image file so now to do the decryption
-            if isinstance(f.result_nonce_file, str):
-                print(f.result_nonce_file)
-                wrapped_nonce = (f.result_nonce_file).encode('latin1').decode('unicode-escape').encode('latin1')
-                wrapped_nonce = wrapped_nonce[2:-1]
-                wrapped_nonce = wrapped_nonce + b'=' * (len(wrapped_nonce) % 4)
-                print('DEBUG33>WRAPPED_NONCE:')
-                print(wrapped_nonce)
-                self.crypt.nonce = b64decode(wrapped_nonce)
-            else:
-                self.crypt.nonce = b64decode(f.data_dek.get().result_nonce_file)
+            self.__set_nonce(f)
 
             keyToFile = data_dek.get().unwrap_key(data_kek.get(), password.encode())
             plaintext = self.crypt.AesDecryptEAX(encryptedFile, CryptoTools().Sha256(keyToFile))
             return plaintext
 
         elif str(f).lower().endswith(('.mp3', '.m4p', '.flac', '.aac')):
-            newpath = musicFS.base_location + str(f)
+            newpath = musicFS.base_location + str(f.image_file.name)
             encryptedFile = open(newpath, 'rb').read()
 
             # We've got the dek and kek attached to the image file so now to do the decryption
-            if isinstance(f.result_nonce_file, str):
-                wrapped_nonce = (f.result_nonce_file).encode('latin1').decode('unicode-escape').encode('latin1')
-                wrapped_nonce = wrapped_nonce[2:-1]
-                wrapped_nonce = wrapped_nonce + b'=' * (len(wrapped_nonce) % 4)
-                self.crypt.nonce = b64decode(wrapped_nonce)
-            else:
-                self.crypt.nonce = b64decode(f.data_dek.get().result_nonce_file)
+            self.__set_nonce(f)
 
             # We've got the dek and kek attached to the image file so now to do the decryption
-            plaintext = self.crypt.AesDecryptEAX(encryptedFile, f.data_dek.unwrap_key(f.data_kek, password.encode()))
-            print("DEBUG> PlainText2:")
+            plaintext = self.__decrypt(encryptedFile, f, password)
+        else:
+            # decrypt
+            newpath = otherFS.base_location + str(f.image_file.name)
+            encryptedFile = open(newpath, 'rb').read()
+
+            # We've got the dek and kek attached to the image file so now to do the decryption
+            self.__set_nonce(f)
+
+            # We've got the dek and kek attached to the image file so now to do the decryption
+            plaintext = self.__decrypt(encryptedFile, f, password)
 
         return plaintext
 
+    def __set_nonce(self, f) -> None:
+        if isinstance(f.result_nonce_file, str):
+            wrapped_nonce = f.result_nonce_file.encode('latin1').decode('unicode-escape').encode('latin1')
+            wrapped_nonce = wrapped_nonce[2:-1]
+            wrapped_nonce = wrapped_nonce + b'=' * (len(wrapped_nonce) % 4)
+            self.crypt.nonce = b64decode(wrapped_nonce)
+        else:
+            self.crypt.nonce = b64decode(f.data_dek.get().result_nonce_file)
 
-'''
-Tag is a generic "model" class that contains two charfields:name and slug, the name is for the title of the tag and the slug is for the unique url
-no inputs
-'''
+    def __decrypt(self, encryptedFile, f, password) -> bytes:
+        return self.crypt.AesDecryptEAX(encryptedFile,
+                                        CryptoTools().Sha256(f.data_dek.get().unwrap_key(f.data_kek.get(),
+                                                                                         password.encode())))
 
 
 class Tag(models.Model):
+    """
+    Tag is a generic "model" class that contains two charfields:name and slug, the name is for the title of the tag and the slug is for the unique url
+    no inputs
+    """
     name = models.CharField(max_length=32, unique=True)
     slug = models.SlugField(max_length=32, unique=True, help_text='A label for URL config.')
 
@@ -282,13 +286,11 @@ class Tag(models.Model):
         return reverse('organizer_tag_detail', kwargs={'slug': self.slug})
 
 
-'''
-Tasking is a model class that contains a name slug, asignee, project_codename, description, and assigned_date It is used to keep track of your work
-no inputs
-'''
-
-
 class Tasking(models.Model):
+    """
+    Tasking is a model class that contains a name slug, asignee, project_codename, description, and assigned_date It is used to keep track of your work
+    no inputs
+    """
     name = models.CharField(max_length=32, unique=True, db_index=True)
     slug = models.SlugField(max_length=32, unique=True, db_index=True)
     asignee = models.CharField(max_length=16, db_index=True)
@@ -318,13 +320,11 @@ class Tasking(models.Model):
         return (self.slug,)
 
 
-'''
-Startup is  a model class that contains a name, slug, description, founded_date, contact, website, and associated tags. This is used for a startup company
-no inputs
-'''
-
-
 class Startup(models.Model):
+    """
+    Startup is  a model class that contains a name, slug, description, founded_date, contact, website, and associated tags. This is used for a startup company
+    no inputs
+    """
     name = models.CharField(max_length=32, db_index=True)
     slug = models.SlugField(max_length=32, unique=True, help_text='A label for URL config.')
     description = models.TextField()
@@ -344,13 +344,11 @@ class Startup(models.Model):
         return reverse('organizer_startup_detail', kwargs={'slug', self.slug})
 
 
-'''
-NewsLink is a models.Model class that contains a title, pub_date, link, and startup used for publishing articles
-no inputs
-'''
-
-
 class NewsLink(models.Model):
+    """
+    NewsLink is a models.Model class that contains a title, pub_date, link, and startup used for publishing articles
+    no inputs
+    """
     title = models.CharField(max_length=64)
     pub_date = models.DateField('date published')
     link = models.URLField(max_length=64)
@@ -365,14 +363,12 @@ class NewsLink(models.Model):
         get_latest_by = 'pub_date'
 
 
-'''
-MusicFile is a models.Model that contains image_file, data_dek, data_kek, and result_nonce_file: used for encrypting music files and organizing into the
-music folder
-no inputs
-'''
-
-
 class MusicFile(models.Model):
+    """
+    MusicFile is a models.Model that contains image_file, data_dek, data_kek, and result_nonce_file: used for encrypting music files and organizing into the
+    music folder
+    no inputs
+    """
     image_file = models.FileField(storage=musicFS, default=None)
     data_dek = models.ForeignKey(DEK, default=1, on_delete=models.CASCADE)
     data_kek = models.ForeignKey(KEK, default=1, on_delete=models.CASCADE)
@@ -388,27 +384,27 @@ class MusicFile(models.Model):
 
     def get_absolute_url(self):
         return reverse('organizer_download_pull', kwargs={
-            'image_file': self.image_file})  # Need to test if actually works for download or if the function needs to decrypt
+            'image_file': self.image_file})  # Need to test if actually works for download or if the function needs
+        # to decrypt
 
     def get_update_url(self):
         return reverse('organizer_upload_create', kwargs={
-            'image_file': self.image_file})  # Need to test if actually works for upload or if the function needs to encrypt
+            'image_file': self.image_file})  # Need to test if actually works for upload or if the function needs to
+        # encrypt
 
     def natural_key(self):
         return (self.image_file,)
 
     def natural_key(self):
         return (self.image_file,)
-
-
-'''
-ImageFile is a models.Model class that contains a image_file, data_dek, data_kek, and result_nonce_file for encyrpting and organizing common image files
-common image files will be .png, .tiff, .bmp
-no inputs
-'''
 
 
 class ImageFile(models.Model):
+    """
+    ImageFile is a models.Model class that contains a image_file, data_dek, data_kek, and result_nonce_file for encyrpting and organizing common image files
+    common image files will be .png, .tiff, .bmp
+    no inputs
+    """
     image_file = models.FileField(storage=photoFS, default=None)
     data_dek = models.ManyToManyField(DEK, default=1)
     data_kek = models.ManyToManyField(KEK, default=1)
@@ -442,14 +438,12 @@ class ImageFile(models.Model):
     ]
 
 
-'''
-VideoFile is a models.Model type class that contains image_file, data_dek, data_kek, and result_nonce_file for encrypting and organizing video files
-common video formats will be .mpg, .mp4, .avi, .mkv
-no inputs
-'''
-
-
 class VideoFile(models.Model):
+    """
+    VideoFile is a models.Model type class that contains image_file, data_dek, data_kek, and result_nonce_file for encrypting and organizing video files
+    common video formats will be .mpg, .mp4, .avi, .mkv
+    no inputs
+    """
     image_file = models.FileField(storage=videoFS, default=None)
     data_dek = models.ManyToManyField(DEK, default=1)
     data_kek = models.ManyToManyField(KEK, default=1)
@@ -469,23 +463,22 @@ class VideoFile(models.Model):
 
     def get_update_url(self):
         return reverse('organizer_upload_create', kwargs={
-            'image_file': self.image_file})  # Need to test if actually works for upload or if the function needs to encrypt
+            'image_file': self.image_file})  # Need to test if actually works for upload or if the function needs to
+        # encrypt
 
     def natural_key(self):
         return (self.image_file,)
 
     def natural_key(self):
         return (self.image_file,)
-
-
-'''
-MiscFile is a models.Model type class extension that includes an image_file, data_dek, data_kek, and result_nonce_file that is used to encrypt and organize
-extension file types that haven't been listed in previous classes such as ImageFile, MusicFile, and VideoFile
-no inputs
-'''
 
 
 class MiscFile(models.Model):
+    """
+    MiscFile is a models.Model type class extension that includes an image_file, data_dek, data_kek, and result_nonce_file that is used to encrypt and organize
+    extension file types that haven't been listed in previous classes such as ImageFile, MusicFile, and VideoFile
+    no inputs
+    """
     image_file = models.FileField(storage=otherFS, default=None)
     data_dek = models.ForeignKey(DEK, default=1, on_delete=models.CASCADE)
     data_kek = models.ForeignKey(KEK, default=1, on_delete=models.CASCADE)

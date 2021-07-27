@@ -25,7 +25,7 @@ SECRET_KEY = 'PLEASE_UPDATE_TO_YOUR_OWN_KEY'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1"]
 
 # Application references
 # https://docs.djangoproject.com/en/2.1/ref/settings/#std:setting-INSTALLED_APPS
@@ -37,13 +37,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    '_FortressOfSolitude.organizer', #CUSTOMIZE
-    '_FortressOfSolitude.Blog', #CUSTOMIZE
-    '_FortressOfSolitude.superhero', #CUSTOMIZE
-    '_FortressOfSolitude.NeutrinoKey', #CUSTOMIZE
-    '_FortressOfSolitude.core', #CUSTOMIZE
+    '_FortressOfSolitude.organizer',
+    '_FortressOfSolitude.Blog',
+    '_FortressOfSolitude.superhero',
+    '_FortressOfSolitude.NeutrinoKey',
+    '_FortressOfSolitude.core',
 ]
-
+DATABASE_ROUTERS = [
+    '_FortressOfSolitude.NeutrinoKey.models.KryptonianSpeak'
+]
 # Middleware framework
 # https://docs.djangoproject.com/en/2.1/topics/http/middleware/
 MIDDLEWARE = [
@@ -84,6 +86,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),#TODO:ADD YOUR PASSWORD
+        'PASSWORD': 'CHANGE_ME',
     }
 }
 
@@ -116,7 +119,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 STATIC_URL = '/static/'
 STATIC_ROOT = posixpath.join(*(BASE_DIR.split(os.path.sep) + ['static']))
-STATICFILES_DIR = (
+static_DIR = (
     os.path.join(BASE_DIR, "static"),
     )
 
@@ -125,3 +128,11 @@ from django.urls import reverse_lazy
 LOGIN_REDIRECT_URL = reverse_lazy('organizer_tasking_create')
 LOGIN_URL = reverse_lazy('dj-auth:login')
 LOGOUT_URL = reverse_lazy('dj-auth:logout')
+
+AUTH_USER_MODEL = 'superhero.User'
+
+#HTTPS redirect
+SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -10,4 +10,5 @@ from django.apps import AppConfig
 
 
 class SuperheroConfig(AppConfig):
-    name = 'superhero'
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = '_FortressOfSolitude.superhero'

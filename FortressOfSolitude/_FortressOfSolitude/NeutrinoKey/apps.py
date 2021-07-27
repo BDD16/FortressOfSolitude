@@ -9,4 +9,4 @@ from django.apps import AppConfig
 
 
 class NeutrinokeyConfig(AppConfig):
-    name = 'NeutrinoKey'
+    name = '_FortressOfSolitude.NeutrinoKey'

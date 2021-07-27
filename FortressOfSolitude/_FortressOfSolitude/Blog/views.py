@@ -34,7 +34,7 @@ class PostUpdate(UpdateView):
 class SecurePostUpdate(PostFormValidMixin, UpdateView):
     form_class = SecurePostForm
     model = SecureDataAtRestPost
-    template_name = 'blog/securedataatrestpost_form_update.html'
+    template_name = 'Blog/securedataatrestpost_form_update.html'
 
 class PostDelete(PostGetMixin, DeleteView):
     model = Post
@@ -66,7 +66,7 @@ class PostCreate(PostFormValidMixin, CreateView):
 class SecurePostCreate(PostFormValidMixin, CreateView):
     form_class = SecurePostForm
     model = SecureDataAtRestPost
-    template_name = 'blog/securenote_form.html'
+    template_name = 'Blog/securenote_form.html'
 
 
 @require_authenticated_permission(
@@ -109,7 +109,7 @@ class PostList(
     make_object_list = True
     model = Post
     paginate_by = 5
-    template_name = 'blog/post_list.html'
+    template_name = 'Blog/post_list.html'
 
 
 @require_authenticated_permission(
@@ -123,7 +123,7 @@ class SecurePostList(
     make_object_list = True
     model = SecureDataAtRestPost
     paginate_by = 5
-    template_name = 'blog/secureNote_list.html'
+    template_name = 'Blog/secureNote_list.html'
 
 
 #@require_authenticated_permission(

@@ -24,8 +24,6 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.urls import path
-from _FortressOfSolitude.Blog.views import greeting
-from _FortressOfSolitude.organizer.views import homepage, tag_detail
 from _FortressOfSolitude.organizer import urls as organizer_urls
 from _FortressOfSolitude.Blog import urls as blog_urls
 from _FortressOfSolitude.Blog.views import PostList
@@ -34,7 +32,7 @@ from _FortressOfSolitude.superhero import urls as superhero_urls
 
 urlpatterns = [
     # Uncomment the next line to enable the admin:
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
     url(r'^', include(organizer_urls)),
     url(r'^$', PostList.as_view()),
     url(r'^superhero/', include((superhero_urls, 'superhero'), namespace='dj-auth')),
