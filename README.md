@@ -26,3 +26,21 @@ Where the SALT is a random number that will be preprended to the KEK (Key Encryp
 Therefore Generated_Key = SHA256(SALT + KEK)
 
 However the only thing that is known to the Attacker would be the SALT. The rest would be AES_EAX Encrypted meaning it is Wrapped. The Wrapped KEK, and Wrapped DEK can only be unwrapped by a forumala that is to be determined.
+
+
+# How to Setup and Initialize
+This is a work in progress but here are the steps so far:
+
+cd FortressOfSolitude
+    Before Moving forward be sure to look over the settings.py file to ensure it is up to par with your needs (default passwords have been changed, etc.)
+
+python3 manage.py makemigrations
+
+python3 manage.py migrate
+    ^ The above step creates a db.sqlite3 please for the love of all that is Holy make sure to update your Password for the Database in the settings
+
+python3 manage.py createsuperuser
+    ^ The above step you will fill out an email and password for your account, remmeber the password is what wraps your keys so make sure its secure (long enough) for your needs)
+    
+python3 manage.py runserver
+    ^ This will open a default server at http://127.0.0.1:8000
