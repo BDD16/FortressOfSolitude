@@ -31,16 +31,26 @@ However the only thing that is known to the Attacker would be the SALT. The rest
 # How to Setup and Initialize
 This is a work in progress but here are the steps so far:
 
-cd FortressOfSolitude
-    Before Moving forward be sure to look over the settings.py file to ensure it is up to par with your needs (default passwords have been changed, etc.)
+` cd FortressOfSolitude `
 
-python3 manage.py makemigrations
+    Before Moving forward be sure to look over the settings.py file
+    to ensure it is up to par with your needs (default passwords have been changed, etc.).
 
-python3 manage.py migrate
-    ^ The above step creates a db.sqlite3 please for the love of all that is Holy make sure to update your Password for the Database in the settings
+` python3 manage.py makemigrations `
 
-python3 manage.py createsuperuser
-    ^ The above step you will fill out an email and password for your account, remmeber the password is what wraps your keys so make sure its secure (long enough) for your needs)
+    The above step creates a db.sqlite3 please 
+    for the love of all that is Holy make sure to 
+    update your Password for the Database in the settings.
+
+` python3 manage.py migrate `
     
-python3 manage.py runserver
-    ^ This will open a default server at http://127.0.0.1:8000
+
+` python3 manage.py createsuperuser `
+
+    You will fill out an email and password for your account, 
+    remember the password is what wraps your keys so make sure 
+    its secure (long enough) for your needs.
+    
+` python3 manage.py runserver `
+
+    This will open a default server at http://127.0.0.1:8000
