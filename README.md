@@ -54,3 +54,8 @@ This is a work in progress but here are the steps so far:
 ` python3 manage.py runserver `
 
     This will open a default server at http://127.0.0.1:8000
+    
+    To get to most of the features such as the encrypted Notes (Secure Notes) you will need to manually traverse to http://127.0.0.1:8000/blog
+    
+![Not_So_Landing_Page](https://user-images.githubusercontent.com/33583381/127745834-4f2714fb-8fbc-4955-8b32-6a0f14bc6f6d.PNG)
+
