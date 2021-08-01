@@ -1,21 +1,21 @@
 '''
-DBA 1337_TECH, AUSTIN TEXAS © MAY 2020
+DBA 1337_TECH, AUSTIN TEXAS © MAY 2021
 Proof of Concept code, No liabilities or warranties expressed or implied.
 '''
 
+import os
+from base64 import (b64encode, b64decode)
+from datetime import datetime
+
+from django.core.files.base import ContentFile
+from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.urls import reverse
-from datetime import datetime
 from django.utils import timezone
-import _FortressOfSolitude.settings as settings
-from django.core.files.storage import FileSystemStorage
-from _FortressOfSolitude.NeutrinoKey.models import DEK, KEK, NeutronMatterCollector, NeutronCore
-from django.contrib.auth import get_user_model
-from django.core.files.base import ContentFile
-from _FortressOfSolitude.NeutrinoKey.cryptoutils import CryptoTools
 
-from base64 import (b64encode, b64decode)
-import os
+import _FortressOfSolitude.settings as settings
+from _FortressOfSolitude.NeutrinoKey.cryptoutils import CryptoTools
+from _FortressOfSolitude.NeutrinoKey.models import DEK, KEK, NeutronMatterCollector, NeutronCore
 
 # Create your models here.
 
@@ -26,29 +26,26 @@ videoFS = FileSystemStorage(location=settings.STATIC_ROOT + '/media/video/')
 otherFS = FileSystemStorage(location=settings.STATIC_ROOT + '/media/otherfiles/')
 # End of Constants
 
-'''
-Tasking Manager is a models.Manager class extension that is used to retrieving the correct Tasking model type
-no inputs
-'''
-
 
 class TaskingManager(models.Manager):
+    """
+    Tasking Manager is a models.Manager class extension that is used to retrieving the correct Tasking model type
+    no inputs
+    """
 
     def get_by_natural_key(self, slug):
         return self.get(slug=slug)
 
 
-'''
-Librarian is a models.Manager class extension that includes a NeutronMatterCollector object, NeutronCore object, and CryptoTools object. The Librarian
-is a helper class that does the encrypting used for decompartmentalizing the roles of encryption and decryption to be seperated logically by classes.
-Use _encrypt_data to encrypt then store the appropriate model into the "fortressvault" database.  furthermore the Librarian is responsible for securing,
-then organizing data at rest.
-'''
-
 
 class Librarian(models.Manager):
-    # NMC = NeutronMatterCollector()
-    # NC = NeutronCore()
+    """
+    Librarian is a models.Manager class extension that includes a NeutronMatterCollector object, NeutronCore object, and CryptoTools object. The Librarian
+    is a helper class that does the encrypting used for decompartmentalizing the roles of encryption and decryption to be seperated logically by classes.
+    Use _encrypt_data to encrypt then store the appropriate model into the "fortressvault" database.  furthermore the Librarian is responsible for securing,
+    then organizing data at rest.
+    """
+
     crypt = CryptoTools()
 
     def get_queryset(self):
@@ -63,7 +60,6 @@ class Librarian(models.Manager):
         req = kwargs.pop('request', False)
         post = kwargs.pop('postobj', False)
 
-        # Librarian.NMC = NeutronMatterCollector(id=req.user.id, time_generated=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         data_kek = NeutronCore().DeriveKek(password)
         data_dek = NeutronMatterCollector().DeriveDek(password)
         nonce = data_dek.result_wrapped_nonce
@@ -72,20 +68,12 @@ class Librarian(models.Manager):
             password = password.encode()
         key = data_dek.unwrap_key(data_kek, password)
 
-        # print("DEK TO USE TO ENCRYPT:")
-        # print(key)
-
-        # print("ENCRYPTED DECODED NONCE: ")
-        # print(Librarian.crypt.nonce)
         if isinstance(modeldata, str):
             modeldata = modeldata.encode()
         encrypted_data = Librarian.crypt.AesEncryptEAX(modeldata, DEK.crypto.Sha256(key))
-        ###TODO: make sure you can first take the text from model data->encrypt->store the ciphertext as the model data
 
         post.secure_text = encrypted_data
 
-        # data_kek.save()
-        # data_dek.save()
         post.data_dek.remove(post.data_dek.get())
         post.data_kek.remove(post.data_kek.get())  # change this before deployment
         post.save()
@@ -93,21 +81,10 @@ class Librarian(models.Manager):
         data_dek.save()
         post.data_dek.add(data_dek)
         post.data_kek.add(data_kek)
-        print("the data_dek id is: ")
-        print(post.data_dek.get().id)
-        # SecureNote(secure_text=encrypted_data,
-        #           data_dek=data_dek,
-        #           data_kek=data_kek,
-        #           slug=request.post.slug,
-        #           **kwargs)
-
-        # print(data.secure_text)
-        # print("This is the Secure Text: " + str(encrypted_data))
-        # data.save()
         print("SECURED A NOTE: ENCRYPTED Sending off to Save")
-        print(dir(post))
-        print(post)
+
         post.save()
+
         return post
 
     def _encrypt_Secure_Note(
@@ -117,7 +94,6 @@ class Librarian(models.Manager):
         req = kwargs.pop('request', False)
         post = kwargs.pop('postobj', False)
 
-        # Librarian.NMC = NeutronMatterCollector(id=req.user.id, time_generated=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         data_kek = NeutronCore().DeriveKek(password)
         data_dek = NeutronMatterCollector().DeriveDek(password)
         nonce = data_dek.result_wrapped_nonce
@@ -126,15 +102,9 @@ class Librarian(models.Manager):
             password = password.encode()
         key = data_dek.unwrap_key(data_kek, password)
 
-        # print("DEK TO USE TO ENCRYPT:")
-        # print(key)
-
-        # print("ENCRYPTED DECODED NONCE: ")
-        # print(Librarian.crypt.nonce)
         if isinstance(modeldata, str):
             modeldata = modeldata.encode()
         encrypted_data = Librarian.crypt.AesEncryptEAX(modeldata, DEK.crypto.Sha256(key))
-        ###TODO: make sure you can first take the text from model data->encrypt->store the ciphertext as the model data
 
         post.secure_text = encrypted_data
         post.save()
@@ -142,21 +112,11 @@ class Librarian(models.Manager):
         data_dek.save()
         post.data_kek.add(data_kek)
         post.data_dek.add(data_dek)
-        print("the data_dek id is: ")
-        print(post.data_dek.get().id)
-        # SecureNote(secure_text=encrypted_data,
-        #           data_dek=data_dek,
-        #           data_kek=data_kek,
-        #           slug=request.post.slug,
-        #           **kwargs)
 
-        # print(data.secure_text)
-        # print("This is the Secure Text: " + str(encrypted_data))
-        # data.save()
         print("SECURED A NOTE: ENCRYPTED Sending off to Save")
-        print(dir(post))
-        print(post)
+
         post.save()
+
         return post
 
     def _encrypt_data(
@@ -165,7 +125,6 @@ class Librarian(models.Manager):
 
         req = kwargs.pop('request', False)
         modeldata = req.FILES['file_field'].read()
-        # Librarian.NMC = NeutronMatterCollector(id=req.user.id, time_generated=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         data_kek = NeutronCore().DeriveKek(password)
         data_dek = NeutronMatterCollector().DeriveDek(password)
         nonce = data_dek.result_wrapped_nonce
@@ -177,9 +136,11 @@ class Librarian(models.Manager):
         encrypted_data = Librarian.crypt.AesEncryptEAX(modeldata, DEK.crypto.Sha256(key))
         file_data = ContentFile(encrypted_data)
         filename = req.FILES['file_field'].name
+        # THIS IS THE HACKY CODE BELOW
         fd = open('/' + os.path.join(photoFS.base_location, filename), 'w+')
         fd.close()
         fd = open('/' + os.path.join(photoFS.base_location, filename), 'wb')
+        # END OF HACKY CODE
         fd.write(encrypted_data)
         fd.close()
         data = self.model(
@@ -195,18 +156,19 @@ class Librarian(models.Manager):
         return data
 
 
-'''
-Gor_El is a models.Manager class extension that includes a NeutronMatterCollector object, NeutronCore object, and CryptoTools object it is used to
-retrieve data from the fortressvault database as well as to answer the questions of Kal-El or simply decrypts the information stored on the server
-includes two flavors of decryption _decrypt_model and _decrypt_data as of writing only ImageFiles can be correctly decrypted. Furthermore Gor_El is
-responsible for retrieving and then decrypting data at rest while ensuring that the original data remains secured at rest.  Thus it acts as an interpretor
-for kryptonian speak.
 
-TODO: Correctly Decrypt MusicFile, VideoFile, and MiscFile using the _decrypt_data function
-'''
 
 
 class Gor_El(models.Manager):
+    """
+    Gor_El is a models.Manager class extension that includes a NeutronMatterCollector object, NeutronCore object, and CryptoTools object it is used to
+    retrieve data from the fortressvault database as well as to answer the questions of Kal-El or simply decrypts the information stored on the server
+    includes two flavors of decryption _decrypt_model and _decrypt_data as of writing only ImageFiles can be correctly decrypted. Furthermore Gor_El is
+    responsible for retrieving and then decrypting data at rest while ensuring that the original data remains secured at rest.  Thus it acts as an interpretor
+    for kryptonian speak.
+
+    TODO: Correctly Decrypt MusicFile, VideoFile, and MiscFile using the _decrypt_data function
+    """
     crypt = CryptoTools()
 
     def get_queryset(self):
@@ -217,7 +179,7 @@ class Gor_El(models.Manager):
 
     def _decrypt_model(self, image_file, **kwargs):
         newpath = photoFS.base_location + str('decrypted_' + str(image_file))
-        encryptedFile = open(photoFS.base_location + str(image_file), 'rb').read()
+        encryptedFile = open('/' + photoFS.base_location + str(image_file), 'rb').read()
         self.crypt.nonce = b64decode(image_file.result_nonce_file)
         password = kwargs.pop('password', False)
         keyToFile = image_file.data_dek.unwrap_key(image_file.data_kek, password.encode())
@@ -259,9 +221,7 @@ class Gor_El(models.Manager):
         plaintext = None
         f = kwargs.pop('image_file', False)
         req = kwargs.pop('request', False)
-        print("DEBUG> DECRYPT THIS FILE:" + str(f.image_file.name))
         if str(f.image_file).lower().endswith(('.png', '.jpg', '.jpeg', '.tiff')):
-            print("DEBUG>PATH:" + str(os.path.join(photoFS.base_location, str(f.image_file.name))))
             encryptedFile = open('/' + os.path.join(photoFS.base_location, str(f.image_file.name)), 'rb').read()
             data_kek = f.data_kek
 
@@ -306,13 +266,11 @@ class Gor_El(models.Manager):
         return plaintext
 
 
-'''
-Tag is a generic "model" class that contains two charfields:name and slug, the name is for the title of the tag and the slug is for the unique url
-no inputs
-'''
-
-
 class Tag(models.Model):
+    """
+    Tag is a generic "model" class that contains two charfields:name and slug, the name is for the title of the tag and the slug is for the unique url
+    no inputs
+    """
     name = models.CharField(max_length=32, unique=True)
     slug = models.SlugField(max_length=32, unique=True, help_text='A label for URL config.')
 
@@ -326,13 +284,11 @@ class Tag(models.Model):
         return reverse('organizer_tag_detail', kwargs={'slug': self.slug})
 
 
-'''
-Tasking is a model class that contains a name slug, asignee, project_codename, description, and assigned_date It is used to keep track of your work
-no inputs
-'''
-
-
 class Tasking(models.Model):
+    """
+    Tasking is a model class that contains a name slug, asignee, project_codename, description, and assigned_date It is used to keep track of your work
+    no inputs
+    """
     name = models.CharField(max_length=32, unique=True, db_index=True)
     slug = models.SlugField(max_length=32, unique=True, db_index=True)
     asignee = models.CharField(max_length=16, db_index=True)
@@ -362,13 +318,11 @@ class Tasking(models.Model):
         return (self.slug,)
 
 
-'''
-Startup is  a model class that contains a name, slug, description, founded_date, contact, website, and associated tags. This is used for a startup company
-no inputs
-'''
-
-
 class Startup(models.Model):
+    """
+    Startup is  a model class that contains a name, slug, description, founded_date, contact, website, and associated tags. This is used for a startup company
+    no inputs
+    """
     name = models.CharField(max_length=32, db_index=True)
     slug = models.SlugField(max_length=32, unique=True, help_text='A label for URL config.')
     description = models.TextField()
@@ -388,13 +342,11 @@ class Startup(models.Model):
         return reverse('organizer_startup_detail', kwargs={'slug', self.slug})
 
 
-'''
-NewsLink is a models.Model class that contains a title, pub_date, link, and startup used for publishing articles
-no inputs
-'''
-
-
 class NewsLink(models.Model):
+    """
+    NewsLink is a models.Model class that contains a title, pub_date, link, and startup used for publishing articles
+    no inputs
+    """
     title = models.CharField(max_length=64)
     pub_date = models.DateField('date published')
     link = models.URLField(max_length=64)
@@ -409,14 +361,12 @@ class NewsLink(models.Model):
         get_latest_by = 'pub_date'
 
 
-'''
-MusicFile is a models.Model that contains image_file, data_dek, data_kek, and result_nonce_file: used for encrypting music files and organizing into the
-music folder
-no inputs
-'''
-
-
 class MusicFile(models.Model):
+    """
+    MusicFile is a models.Model that contains image_file, data_dek, data_kek, and result_nonce_file: used for encrypting music files and organizing into the
+    music folder
+    no inputs
+    """
     image_file = models.FileField(storage=musicFS, default=None)
     data_dek = models.ForeignKey(DEK, default=1, on_delete=models.CASCADE)
     data_kek = models.ForeignKey(KEK, default=1, on_delete=models.CASCADE)
@@ -445,14 +395,12 @@ class MusicFile(models.Model):
         return (self.image_file,)
 
 
-'''
-ImageFile is a models.Model class that contains a image_file, data_dek, data_kek, and result_nonce_file for encyrpting and organizing common image files
-common image files will be .png, .tiff, .bmp
-no inputs
-'''
-
-
 class ImageFile(models.Model):
+    """
+    ImageFile is a models.Model class that contains a image_file, data_dek, data_kek, and result_nonce_file for encyrpting and organizing common image files
+    common image files will be .png, .tiff, .bmp
+    no inputs
+    """
     image_file = models.FileField(storage=photoFS, default=None)
     data_dek = models.ManyToManyField(DEK, default=1)
     data_kek = models.ManyToManyField(KEK, default=1)
@@ -487,14 +435,15 @@ class ImageFile(models.Model):
     ]
 
 
-'''
-VideoFile is a models.Model type class that contains image_file, data_dek, data_kek, and result_nonce_file for encrypting and organizing video files
-common video formats will be .mpg, .mp4, .avi, .mkv
-no inputs
-'''
+
 
 
 class VideoFile(models.Model):
+    """
+    VideoFile is a models.Model type class that contains image_file, data_dek, data_kek, and result_nonce_file for encrypting and organizing video files
+    common video formats will be .mpg, .mp4, .avi, .mkv
+    no inputs
+    """
     image_file = models.FileField(storage=videoFS, default=None)
     data_dek = models.ManyToManyField(DEK, default=1)
     data_kek = models.ManyToManyField(KEK, default=1)
@@ -523,14 +472,15 @@ class VideoFile(models.Model):
         return (self.image_file,)
 
 
-'''
-MiscFile is a models.Model type class extension that includes an image_file, data_dek, data_kek, and result_nonce_file that is used to encrypt and organize
-extension file types that haven't been listed in previous classes such as ImageFile, MusicFile, and VideoFile
-no inputs
-'''
+
 
 
 class MiscFile(models.Model):
+    """
+    MiscFile is a models.Model type class extension that includes an image_file, data_dek, data_kek, and result_nonce_file that is used to encrypt and organize
+    extension file types that haven't been listed in previous classes such as ImageFile, MusicFile, and VideoFile
+    no inputs
+    """
     image_file = models.FileField(storage=otherFS, default=None)
     data_dek = models.ForeignKey(DEK, default=1, on_delete=models.CASCADE)
     data_kek = models.ForeignKey(KEK, default=1, on_delete=models.CASCADE)
@@ -560,6 +510,15 @@ class MiscFile(models.Model):
 
 
 class SecureNote(models.Model):
+    """
+    Used as sort of a Base class for a Securing Arbitrary Text which is used as an example in the
+    _FortressOfSolitude.Blog.models.SecureDataAtRestPost which inherits this class to more or less
+    simply be a little 'organized' as to what is all required to secure a Note.  At the moment you need
+    to have a data_dek and data_kek already stored in the database in order to begin generating
+    it doesn't actually select the data_kek and data_dek, there is a form slot for it but no matter
+    what it will randomly generate one in case there is someone trying to reuse keys.  I saw this as a
+    potential security flaw if you could use the same key for the same file.
+    """
     slug = models.SlugField(max_length=32, unique=True, db_index=True, help_text='A label for URL config.')
     title = models.CharField(max_length=64, default='Bruh, Change the Title')
     pub_date = models.DateTimeField('date published', auto_now_add=timezone.now())
