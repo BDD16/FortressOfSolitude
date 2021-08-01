@@ -1,13 +1,16 @@
-"""
-DBA 1337_TECH, AUSTIN TEXAS © MAY 2021
+'''
+DBA 1337_TECH, AUSTIN TEXAS © MAY 2020
 Proof of Concept code, No liabilities or warranties expressed or implied.
-"""
+'''
 
-from _FortressOfSolitude.organizer.models import SecureNote
-from _FortressOfSolitude.organizer.models import Tag, Tasking, Librarian
-from django.contrib.auth import get_user_model
 from django.db import models
-from django.urls import reverse
+
+from django.urls import reverse, reverse_lazy
+import _FortressOfSolitude.settings as settings
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
+from _FortressOfSolitude.organizer.models import Startup, Tag, Tasking, SecureNote, Librarian
+from _FortressOfSolitude.organizer.models import SecureNote
 
 
 # Create your models here.
@@ -60,12 +63,16 @@ PostManager = BasePostManager.from_queryset(
 
 
 class SecureDataAtRestPost(SecureNote):
+    # title = models.CharField(max_length=64)
+    # slug = models.SlugField(max_length=64, help_text='A label for URL config', unique_for_month='pub_date')
     author = models.ForeignKey(
         get_user_model(),
         related_name='secureblog_posts',
         on_delete=models.CASCADE,
         default=1)
+    # pub_date = models.DateField('date published', auto_now_add=True)
     tags = models.ManyToManyField(Tag, related_name='secureblog_posts')
+    # startups = models.ManyToManyField(Startup, related_name='blog_posts')
     tasking = models.ManyToManyField(Tasking, related_name='securetasking')
     is_encrypted = models.BooleanField(default=True)
 
@@ -125,6 +132,10 @@ class SecureDataAtRestPost(SecureNote):
             self.slug)
 
     natural_key.dependencies = [
+        # 'organizer.startup',
+        # 'NeutrinoKey.DEK',
+        # 'NeutrinoKey.KEK',
+        # 'organizer.tag',
         'user.user',
     ]
 
@@ -156,6 +167,7 @@ class Post(models.Model):
     text = models.TextField()
     pub_date = models.DateField('date published', auto_now_add=True)
     tags = models.ManyToManyField(Tag, related_name='blog_posts')
+    # startups = models.ManyToManyField(Startup, related_name='blog_posts')
     tasking = models.ManyToManyField(Tasking, related_name='tasking')
 
     objects = PostManager()
@@ -214,6 +226,7 @@ class Post(models.Model):
             self.slug)
 
     natural_key.dependencies = [
+        # 'organizer.startup',
         'organizer.tag',
         'user.user',
     ]

@@ -1,29 +1,28 @@
-"""
+'''
 DBA 1337_TECH, AUSTIN TEXAS © MAY 2021
 Proof of Concept code, No liabilities or warranties expressed or implied.
-"""
+'''
 
 
-from _FortressOfSolitude.NeutrinoKey.decorators import custom_login_required
-from _FortressOfSolitude.core.utils import UpdateView
-from _FortressOfSolitude.organizer.models import (ImageFile, MusicFile, MiscFile, Gor_El)
-from _FortressOfSolitude.superhero.decorators import require_authenticated_permission
 from django.contrib.auth import PermissionDenied
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.decorators import permission_required
-from django.http import HttpResponseRedirect, HttpResponse
+from .models import Tag, Tasking
 from django.shortcuts import (get_object_or_404, redirect, render)
 from django.urls import reverse, reverse_lazy
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import permission_required
+from .forms import TagForm, TaskingForm, UploadFileForm
 from django.views.generic import (FormView, ListView, View)
+from _FortressOfSolitude.NeutrinoKey.decorators import custom_login_required
+from .utils import CreateView
+from _FortressOfSolitude.superhero.decorators import require_authenticated_permission
+from _FortressOfSolitude.organizer.models import (ImageFile, MusicFile, MiscFile, Gor_El)
+from _FortressOfSolitude.core.utils import UpdateView
+from _FortressOfSolitude.organizer.utils import StartupContextMixin
+
 from django.views.generic.detail import SingleObjectMixin
 
-from .forms import TagForm, TaskingForm, UploadFileForm
-from .models import Tag, Tasking
-from .utils import CreateView
-
-
-#experimental feature for progress bar
 # Create your views here.
 def homepage(request):
     return render(request, 'organizer/tag_list.html', {'tag_list': Tag.objects.all()})
@@ -261,7 +260,7 @@ class UploadFile(FormView): #CreateView
                     print("storing file: " + str(f))
                     enc = handle_misc_uploaded_file(MiscFile(f), request)
                     #make sure we can decrypt in this case
-                    enc = handle_downlaoded_file(enc, request)#Take out before final production
+                    enc = handle_downloaded_file(enc, request)#Take out before final production
                     #View output form to make sure that everything was outputted correctly i.e. no encryption or decryption error
 
                 i += 1

@@ -1,20 +1,21 @@
-"""
-DBA 1337_TECH, AUSTIN TEXAS © MAY 2021
+'''
+DBA 1337_TECH, AUSTIN TEXAS © MAY 2020
 Proof of Concept code, No liabilities or warranties expressed or implied.
-"""
+'''
 
-import os
-from base64 import (b64encode, b64decode)
-from datetime import datetime
-
-import _FortressOfSolitude.settings as settings
-from _FortressOfSolitude.NeutrinoKey.cryptoutils import CryptoTools
-from _FortressOfSolitude.NeutrinoKey.models import DEK, KEK, NeutronMatterCollector, NeutronCore
-from django.core.files.base import ContentFile
-from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.urls import reverse
+from datetime import datetime
 from django.utils import timezone
+import _FortressOfSolitude.settings as settings
+from django.core.files.storage import FileSystemStorage
+from _FortressOfSolitude.NeutrinoKey.models import DEK, KEK, NeutronMatterCollector, NeutronCore
+from django.contrib.auth import get_user_model
+from django.core.files.base import ContentFile
+from _FortressOfSolitude.NeutrinoKey.cryptoutils import CryptoTools
+
+from base64 import (b64encode, b64decode)
+import os
 
 # Create your models here.
 
@@ -23,27 +24,31 @@ musicFS = FileSystemStorage(location=settings.STATIC_ROOT + '/media/music/')
 photoFS = FileSystemStorage(location=settings.STATIC_ROOT + '/media/photos/')
 videoFS = FileSystemStorage(location=settings.STATIC_ROOT + '/media/video/')
 otherFS = FileSystemStorage(location=settings.STATIC_ROOT + '/media/otherfiles/')
-
-
 # End of Constants
 
+'''
+Tasking Manager is a models.Manager class extension that is used to retrieving the correct Tasking model type
+no inputs
+'''
+
+
 class TaskingManager(models.Manager):
-    """
-    Tasking Manager is a models.Manager class extension that is used to retrieving the correct Tasking model type
-    no inputs
-    """
 
     def get_by_natural_key(self, slug):
         return self.get(slug=slug)
 
 
+'''
+Librarian is a models.Manager class extension that includes a NeutronMatterCollector object, NeutronCore object, and CryptoTools object. The Librarian
+is a helper class that does the encrypting used for decompartmentalizing the roles of encryption and decryption to be seperated logically by classes.
+Use _encrypt_data to encrypt then store the appropriate model into the "fortressvault" database.  furthermore the Librarian is responsible for securing,
+then organizing data at rest.
+'''
+
+
 class Librarian(models.Manager):
-    """
-    Librarian is a models.Manager class extension that includes a NeutronMatterCollector object, NeutronCore object, and CryptoTools object. The Librarian
-    is a helper class that does the encrypting used for decompartmentalizing the roles of encryption and decryption to be seperated logically by classes.
-    Use _encrypt_data to encrypt then store the appropriate model into the "fortressvault" database.  furthermore the Librarian is responsible for securing,
-    then organizing data at rest.
-    """
+    # NMC = NeutronMatterCollector()
+    # NC = NeutronCore()
     crypt = CryptoTools()
 
     def get_queryset(self):
@@ -57,6 +62,8 @@ class Librarian(models.Manager):
 
         req = kwargs.pop('request', False)
         post = kwargs.pop('postobj', False)
+
+        # Librarian.NMC = NeutronMatterCollector(id=req.user.id, time_generated=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         data_kek = NeutronCore().DeriveKek(password)
         data_dek = NeutronMatterCollector().DeriveDek(password)
         nonce = data_dek.result_wrapped_nonce
@@ -65,6 +72,11 @@ class Librarian(models.Manager):
             password = password.encode()
         key = data_dek.unwrap_key(data_kek, password)
 
+        # print("DEK TO USE TO ENCRYPT:")
+        # print(key)
+
+        # print("ENCRYPTED DECODED NONCE: ")
+        # print(Librarian.crypt.nonce)
         if isinstance(modeldata, str):
             modeldata = modeldata.encode()
         encrypted_data = Librarian.crypt.AesEncryptEAX(modeldata, DEK.crypto.Sha256(key))
@@ -72,6 +84,8 @@ class Librarian(models.Manager):
 
         post.secure_text = encrypted_data
 
+        # data_kek.save()
+        # data_dek.save()
         post.data_dek.remove(post.data_dek.get())
         post.data_kek.remove(post.data_kek.get())  # change this before deployment
         post.save()
@@ -79,7 +93,20 @@ class Librarian(models.Manager):
         data_dek.save()
         post.data_dek.add(data_dek)
         post.data_kek.add(data_kek)
+        print("the data_dek id is: ")
+        print(post.data_dek.get().id)
+        # SecureNote(secure_text=encrypted_data,
+        #           data_dek=data_dek,
+        #           data_kek=data_kek,
+        #           slug=request.post.slug,
+        #           **kwargs)
+
+        # print(data.secure_text)
+        # print("This is the Secure Text: " + str(encrypted_data))
+        # data.save()
         print("SECURED A NOTE: ENCRYPTED Sending off to Save")
+        print(dir(post))
+        print(post)
         post.save()
         return post
 
@@ -90,6 +117,7 @@ class Librarian(models.Manager):
         req = kwargs.pop('request', False)
         post = kwargs.pop('postobj', False)
 
+        # Librarian.NMC = NeutronMatterCollector(id=req.user.id, time_generated=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         data_kek = NeutronCore().DeriveKek(password)
         data_dek = NeutronMatterCollector().DeriveDek(password)
         nonce = data_dek.result_wrapped_nonce
@@ -98,6 +126,11 @@ class Librarian(models.Manager):
             password = password.encode()
         key = data_dek.unwrap_key(data_kek, password)
 
+        # print("DEK TO USE TO ENCRYPT:")
+        # print(key)
+
+        # print("ENCRYPTED DECODED NONCE: ")
+        # print(Librarian.crypt.nonce)
         if isinstance(modeldata, str):
             modeldata = modeldata.encode()
         encrypted_data = Librarian.crypt.AesEncryptEAX(modeldata, DEK.crypto.Sha256(key))
@@ -109,7 +142,20 @@ class Librarian(models.Manager):
         data_dek.save()
         post.data_kek.add(data_kek)
         post.data_dek.add(data_dek)
+        print("the data_dek id is: ")
+        print(post.data_dek.get().id)
+        # SecureNote(secure_text=encrypted_data,
+        #           data_dek=data_dek,
+        #           data_kek=data_kek,
+        #           slug=request.post.slug,
+        #           **kwargs)
+
+        # print(data.secure_text)
+        # print("This is the Secure Text: " + str(encrypted_data))
+        # data.save()
         print("SECURED A NOTE: ENCRYPTED Sending off to Save")
+        print(dir(post))
+        print(post)
         post.save()
         return post
 
@@ -119,6 +165,7 @@ class Librarian(models.Manager):
 
         req = kwargs.pop('request', False)
         modeldata = req.FILES['file_field'].read()
+        # Librarian.NMC = NeutronMatterCollector(id=req.user.id, time_generated=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         data_kek = NeutronCore().DeriveKek(password)
         data_dek = NeutronMatterCollector().DeriveDek(password)
         nonce = data_dek.result_wrapped_nonce
@@ -130,13 +177,13 @@ class Librarian(models.Manager):
         encrypted_data = Librarian.crypt.AesEncryptEAX(modeldata, DEK.crypto.Sha256(key))
         file_data = ContentFile(encrypted_data)
         filename = req.FILES['file_field'].name
-        savehere = str(photoFS._location) + filename
-        fd = open(os.path.join(photoFS._location, filename), 'wb+')
+        fd = open('/' + os.path.join(photoFS.base_location, filename), 'w+')
+        fd.close()
+        fd = open('/' + os.path.join(photoFS.base_location, filename), 'wb')
         fd.write(encrypted_data)
         fd.close()
         data = self.model(
             image_file=file_data,
-            # image_file=file_data,
             **kwargs)
         data.image_file.name = filename
         data.result_nonce_file = nonce
@@ -148,22 +195,24 @@ class Librarian(models.Manager):
         return data
 
 
-class Gor_El(models.Manager):
-    """
-    Gor_El is a models.Manager class extension that includes a NeutronMatterCollector object, NeutronCore object, and CryptoTools object it is used to
-    retrieve data from the fortressvault database as well as to answer the questions of Kal-El or simply decrypts the information stored on the server
-    includes two flavors of decryption _decrypt_model and _decrypt_data as of writing only ImageFiles can be correctly decrypted. Furthermore Gor_El is
-    responsible for retrieving and then decrypting data at rest while ensuring that the original data remains secured at rest.  Thus it acts as an interpretor
-    for kryptonian speak.
+'''
+Gor_El is a models.Manager class extension that includes a NeutronMatterCollector object, NeutronCore object, and CryptoTools object it is used to
+retrieve data from the fortressvault database as well as to answer the questions of Kal-El or simply decrypts the information stored on the server
+includes two flavors of decryption _decrypt_model and _decrypt_data as of writing only ImageFiles can be correctly decrypted. Furthermore Gor_El is
+responsible for retrieving and then decrypting data at rest while ensuring that the original data remains secured at rest.  Thus it acts as an interpretor
+for kryptonian speak.
 
-    TODO: Correctly Decrypt MusicFile, VideoFile, and MiscFile using the _decrypt_data function
-    """
+TODO: Correctly Decrypt MusicFile, VideoFile, and MiscFile using the _decrypt_data function
+'''
+
+
+class Gor_El(models.Manager):
     crypt = CryptoTools()
 
     def get_queryset(self):
         qs = models.QuerySet(self.model)
         if self._db is not None:
-            qs = qs.using('fortressvault')
+            qs = qs.using('default')
         return qs
 
     def _decrypt_model(self, image_file, **kwargs):
@@ -195,16 +244,11 @@ class Gor_El(models.Manager):
             ciphertext = secureNote.secure_text
             ciphertext = ciphertext.encode('latin1').decode('unicode-escape').encode('latin1')
             ciphertext = ciphertext[2:len(ciphertext) - 1]
-            # ciphertext = ciphertext.replace(b"'", b'')
         else:
             ciphertext = ciphertext.encode()
 
-        print("dataKEK ID:")
-        print(secureNote.data_kek.get().id)
         data_dek = secureNote.data_dek.get(id=secureNote.data_dek.get().id)
         keyToFile = data_dek.unwrap_key(secureNote.data_kek.get(), request.user.password.encode())
-        print("DEBUG> KEYTOFILE DECRYPTING SECURE TEXT: ")
-        print(keyToFile)
 
         hash = CryptoTools()
         plaintext = self.crypt.AesDecryptEAX(ciphertext, hash.Sha256(keyToFile))
@@ -216,63 +260,59 @@ class Gor_El(models.Manager):
         f = kwargs.pop('image_file', False)
         req = kwargs.pop('request', False)
         print("DEBUG> DECRYPT THIS FILE:" + str(f.image_file.name))
-
         if str(f.image_file).lower().endswith(('.png', '.jpg', '.jpeg', '.tiff')):
-            newpath = photoFS.base_location + str(f.image_file.name)
-            encryptedFile = open(os.path.join(photoFS.base_location, str(f.image_file.name)), 'rb').read()
+            print("DEBUG>PATH:" + str(os.path.join(photoFS.base_location, str(f.image_file.name))))
+            encryptedFile = open('/' + os.path.join(photoFS.base_location, str(f.image_file.name)), 'rb').read()
             data_kek = f.data_kek
 
             data_dek = f.data_dek
 
             # We've got the dek and kek attached to the image file so now to do the decryption
-            self.__set_nonce(f)
+            if isinstance(f.result_nonce_file, str):
+                wrapped_nonce = (f.result_nonce_file).encode('latin1').decode('unicode-escape').encode('latin1')
+                wrapped_nonce = wrapped_nonce[2:-1]
+                wrapped_nonce = wrapped_nonce + b'=' * (len(wrapped_nonce) % 4)
+                self.crypt.nonce = b64decode(wrapped_nonce)
+            else:
+                self.crypt.nonce = b64decode(f.data_dek.get().result_nonce_file)
 
             keyToFile = data_dek.get().unwrap_key(data_kek.get(), password.encode())
+
+            self.crypt.nonce = b64decode(wrapped_nonce)
+            plaintext = self.crypt.AesDecryptEAX(encryptedFile, CryptoTools().Sha256(keyToFile))
+            return plaintext
+        elif str(f).lower().endswith(('.mp3', '.m4p', '.flac', '.aac')):
+            print("DEBUG>PATH:" + str(os.path.join(photoFS.base_location, str(f.image_file.name))))
+            encryptedFile = open('/' + os.path.join(musicFS.base_location, str(f.image_file.name)), 'rb').read()
+            data_kek = f.data_kek
+
+            data_dek = f.data_dek
+
+            # We've got the dek and kek attached to the image file so now to do the decryption
+            if isinstance(f.result_nonce_file, str):
+                wrapped_nonce = (f.result_nonce_file).encode('latin1').decode('unicode-escape').encode('latin1')
+                wrapped_nonce = wrapped_nonce[2:-1]
+                wrapped_nonce = wrapped_nonce + b'=' * (len(wrapped_nonce) % 4)
+                self.crypt.nonce = b64decode(wrapped_nonce)
+            else:
+                self.crypt.nonce = b64decode(f.data_dek.get().result_nonce_file)
+
+            keyToFile = data_dek.get().unwrap_key(data_kek.get(), password.encode())
+
+            self.crypt.nonce = b64decode(wrapped_nonce)
             plaintext = self.crypt.AesDecryptEAX(encryptedFile, CryptoTools().Sha256(keyToFile))
             return plaintext
 
-        elif str(f).lower().endswith(('.mp3', '.m4p', '.flac', '.aac')):
-            newpath = musicFS.base_location + str(f.image_file.name)
-            encryptedFile = open(newpath, 'rb').read()
-
-            # We've got the dek and kek attached to the image file so now to do the decryption
-            self.__set_nonce(f)
-
-            # We've got the dek and kek attached to the image file so now to do the decryption
-            plaintext = self.__decrypt(encryptedFile, f, password)
-        else:
-            # decrypt
-            newpath = otherFS.base_location + str(f.image_file.name)
-            encryptedFile = open(newpath, 'rb').read()
-
-            # We've got the dek and kek attached to the image file so now to do the decryption
-            self.__set_nonce(f)
-
-            # We've got the dek and kek attached to the image file so now to do the decryption
-            plaintext = self.__decrypt(encryptedFile, f, password)
-
         return plaintext
 
-    def __set_nonce(self, f) -> None:
-        if isinstance(f.result_nonce_file, str):
-            wrapped_nonce = f.result_nonce_file.encode('latin1').decode('unicode-escape').encode('latin1')
-            wrapped_nonce = wrapped_nonce[2:-1]
-            wrapped_nonce = wrapped_nonce + b'=' * (len(wrapped_nonce) % 4)
-            self.crypt.nonce = b64decode(wrapped_nonce)
-        else:
-            self.crypt.nonce = b64decode(f.data_dek.get().result_nonce_file)
 
-    def __decrypt(self, encryptedFile, f, password) -> bytes:
-        return self.crypt.AesDecryptEAX(encryptedFile,
-                                        CryptoTools().Sha256(f.data_dek.get().unwrap_key(f.data_kek.get(),
-                                                                                         password.encode())))
+'''
+Tag is a generic "model" class that contains two charfields:name and slug, the name is for the title of the tag and the slug is for the unique url
+no inputs
+'''
 
 
 class Tag(models.Model):
-    """
-    Tag is a generic "model" class that contains two charfields:name and slug, the name is for the title of the tag and the slug is for the unique url
-    no inputs
-    """
     name = models.CharField(max_length=32, unique=True)
     slug = models.SlugField(max_length=32, unique=True, help_text='A label for URL config.')
 
@@ -286,11 +326,13 @@ class Tag(models.Model):
         return reverse('organizer_tag_detail', kwargs={'slug': self.slug})
 
 
+'''
+Tasking is a model class that contains a name slug, asignee, project_codename, description, and assigned_date It is used to keep track of your work
+no inputs
+'''
+
+
 class Tasking(models.Model):
-    """
-    Tasking is a model class that contains a name slug, asignee, project_codename, description, and assigned_date It is used to keep track of your work
-    no inputs
-    """
     name = models.CharField(max_length=32, unique=True, db_index=True)
     slug = models.SlugField(max_length=32, unique=True, db_index=True)
     asignee = models.CharField(max_length=16, db_index=True)
@@ -320,11 +362,13 @@ class Tasking(models.Model):
         return (self.slug,)
 
 
+'''
+Startup is  a model class that contains a name, slug, description, founded_date, contact, website, and associated tags. This is used for a startup company
+no inputs
+'''
+
+
 class Startup(models.Model):
-    """
-    Startup is  a model class that contains a name, slug, description, founded_date, contact, website, and associated tags. This is used for a startup company
-    no inputs
-    """
     name = models.CharField(max_length=32, db_index=True)
     slug = models.SlugField(max_length=32, unique=True, help_text='A label for URL config.')
     description = models.TextField()
@@ -344,11 +388,13 @@ class Startup(models.Model):
         return reverse('organizer_startup_detail', kwargs={'slug', self.slug})
 
 
+'''
+NewsLink is a models.Model class that contains a title, pub_date, link, and startup used for publishing articles
+no inputs
+'''
+
+
 class NewsLink(models.Model):
-    """
-    NewsLink is a models.Model class that contains a title, pub_date, link, and startup used for publishing articles
-    no inputs
-    """
     title = models.CharField(max_length=64)
     pub_date = models.DateField('date published')
     link = models.URLField(max_length=64)
@@ -363,12 +409,14 @@ class NewsLink(models.Model):
         get_latest_by = 'pub_date'
 
 
+'''
+MusicFile is a models.Model that contains image_file, data_dek, data_kek, and result_nonce_file: used for encrypting music files and organizing into the
+music folder
+no inputs
+'''
+
+
 class MusicFile(models.Model):
-    """
-    MusicFile is a models.Model that contains image_file, data_dek, data_kek, and result_nonce_file: used for encrypting music files and organizing into the
-    music folder
-    no inputs
-    """
     image_file = models.FileField(storage=musicFS, default=None)
     data_dek = models.ForeignKey(DEK, default=1, on_delete=models.CASCADE)
     data_kek = models.ForeignKey(KEK, default=1, on_delete=models.CASCADE)
@@ -384,27 +432,27 @@ class MusicFile(models.Model):
 
     def get_absolute_url(self):
         return reverse('organizer_download_pull', kwargs={
-            'image_file': self.image_file})  # Need to test if actually works for download or if the function needs
-        # to decrypt
+            'image_file': self.image_file})  # Need to test if actually works for download or if the function needs to decrypt
 
     def get_update_url(self):
         return reverse('organizer_upload_create', kwargs={
-            'image_file': self.image_file})  # Need to test if actually works for upload or if the function needs to
-        # encrypt
+            'image_file': self.image_file})  # Need to test if actually works for upload or if the function needs to encrypt
 
     def natural_key(self):
         return (self.image_file,)
 
     def natural_key(self):
         return (self.image_file,)
+
+
+'''
+ImageFile is a models.Model class that contains a image_file, data_dek, data_kek, and result_nonce_file for encyrpting and organizing common image files
+common image files will be .png, .tiff, .bmp
+no inputs
+'''
 
 
 class ImageFile(models.Model):
-    """
-    ImageFile is a models.Model class that contains a image_file, data_dek, data_kek, and result_nonce_file for encyrpting and organizing common image files
-    common image files will be .png, .tiff, .bmp
-    no inputs
-    """
     image_file = models.FileField(storage=photoFS, default=None)
     data_dek = models.ManyToManyField(DEK, default=1)
     data_kek = models.ManyToManyField(KEK, default=1)
@@ -433,17 +481,20 @@ class ImageFile(models.Model):
         return (self.image_file,)
 
     natural_key.dependencies = [
+        # 'organizer.startup',
         'NeutrinoKey.DEK',
         'NeutrinoKey.KEK',
     ]
 
 
+'''
+VideoFile is a models.Model type class that contains image_file, data_dek, data_kek, and result_nonce_file for encrypting and organizing video files
+common video formats will be .mpg, .mp4, .avi, .mkv
+no inputs
+'''
+
+
 class VideoFile(models.Model):
-    """
-    VideoFile is a models.Model type class that contains image_file, data_dek, data_kek, and result_nonce_file for encrypting and organizing video files
-    common video formats will be .mpg, .mp4, .avi, .mkv
-    no inputs
-    """
     image_file = models.FileField(storage=videoFS, default=None)
     data_dek = models.ManyToManyField(DEK, default=1)
     data_kek = models.ManyToManyField(KEK, default=1)
@@ -463,22 +514,23 @@ class VideoFile(models.Model):
 
     def get_update_url(self):
         return reverse('organizer_upload_create', kwargs={
-            'image_file': self.image_file})  # Need to test if actually works for upload or if the function needs to
-        # encrypt
+            'image_file': self.image_file})  # Need to test if actually works for upload or if the function needs to encrypt
 
     def natural_key(self):
         return (self.image_file,)
 
     def natural_key(self):
         return (self.image_file,)
+
+
+'''
+MiscFile is a models.Model type class extension that includes an image_file, data_dek, data_kek, and result_nonce_file that is used to encrypt and organize
+extension file types that haven't been listed in previous classes such as ImageFile, MusicFile, and VideoFile
+no inputs
+'''
 
 
 class MiscFile(models.Model):
-    """
-    MiscFile is a models.Model type class extension that includes an image_file, data_dek, data_kek, and result_nonce_file that is used to encrypt and organize
-    extension file types that haven't been listed in previous classes such as ImageFile, MusicFile, and VideoFile
-    no inputs
-    """
     image_file = models.FileField(storage=otherFS, default=None)
     data_dek = models.ForeignKey(DEK, default=1, on_delete=models.CASCADE)
     data_kek = models.ForeignKey(KEK, default=1, on_delete=models.CASCADE)
@@ -515,6 +567,8 @@ class SecureNote(models.Model):
     data_dek = models.ManyToManyField(DEK, default=1, related_name='data_dek')
     data_kek = models.ManyToManyField(KEK, default=1, related_name='data_kek')
     result_nonce_text = models.CharField(max_length=128, default=b64encode(int(55).to_bytes(4, 'big')))
+
+    # objects = Librarian()
 
     class Meta:
         abstract = True

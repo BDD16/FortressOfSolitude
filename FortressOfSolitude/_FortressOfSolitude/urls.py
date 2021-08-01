@@ -22,13 +22,11 @@ Including another URLconf
 
 # Uncomment next two lines to enable admin:
 from django.conf.urls import include, url
-from django.contrib import admin
-from django.urls import path
-from _FortressOfSolitude.organizer import urls as organizer_urls
+
 from _FortressOfSolitude.Blog import urls as blog_urls
 from _FortressOfSolitude.Blog.views import PostList
+from _FortressOfSolitude.organizer import urls as organizer_urls
 from _FortressOfSolitude.superhero import urls as superhero_urls
-
 
 urlpatterns = [
     # Uncomment the next line to enable the admin:
