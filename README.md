@@ -59,3 +59,9 @@ This is a work in progress but here are the steps so far:
     
 ![Not_So_Landing_Page](https://user-images.githubusercontent.com/33583381/127745834-4f2714fb-8fbc-4955-8b32-6a0f14bc6f6d.PNG)
 
+    Secure Notes after creating a tag, tasking, and uploading a file successfully
+    
+<img width="1306" alt="SecureNotes_List" src="https://user-images.githubusercontent.com/33583381/127792135-7f20eb4a-8092-4fda-ab28-5a8444f20422.png">
+
+<img width="1307" alt="SecureMessage_decrypted" src="https://user-images.githubusercontent.com/33583381/127792173-02146348-020f-4577-a077-1c7419e35ae0.png">
+
