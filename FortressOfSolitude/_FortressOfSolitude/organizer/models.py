@@ -1,7 +1,7 @@
-'''
+"""
 DBA 1337_TECH, AUSTIN TEXAS © MAY 2021
 Proof of Concept code, No liabilities or warranties expressed or implied.
-'''
+"""
 
 import os
 from base64 import (b64encode, b64decode)
@@ -24,6 +24,8 @@ musicFS = FileSystemStorage(location=settings.STATIC_ROOT + '/media/music/')
 photoFS = FileSystemStorage(location=settings.STATIC_ROOT + '/media/photos/')
 videoFS = FileSystemStorage(location=settings.STATIC_ROOT + '/media/video/')
 otherFS = FileSystemStorage(location=settings.STATIC_ROOT + '/media/otherfiles/')
+
+
 # End of Constants
 
 
@@ -37,13 +39,13 @@ class TaskingManager(models.Manager):
         return self.get(slug=slug)
 
 
-
 class Librarian(models.Manager):
     """
-    Librarian is a models.Manager class extension that includes a NeutronMatterCollector object, NeutronCore object, and CryptoTools object. The Librarian
-    is a helper class that does the encrypting used for decompartmentalizing the roles of encryption and decryption to be seperated logically by classes.
-    Use _encrypt_data to encrypt then store the appropriate model into the "fortressvault" database.  furthermore the Librarian is responsible for securing,
-    then organizing data at rest.
+    Librarian is a models.Manager class extension that includes a NeutronMatterCollector object, NeutronCore object,
+    and CryptoTools object. The Librarian is a helper class that does the encrypting used for decompartmentalizing
+    the roles of encryption and decryption to be seperated logically by classes. Use _encrypt_data to encrypt then
+    store the appropriate model into the "fortressvault" database.  furthermore the Librarian is responsible for
+    securing, then organizing data at rest.
     """
 
     crypt = CryptoTools()
@@ -156,16 +158,14 @@ class Librarian(models.Manager):
         return data
 
 
-
-
-
 class Gor_El(models.Manager):
     """
-    Gor_El is a models.Manager class extension that includes a NeutronMatterCollector object, NeutronCore object, and CryptoTools object it is used to
-    retrieve data from the fortressvault database as well as to answer the questions of Kal-El or simply decrypts the information stored on the server
-    includes two flavors of decryption _decrypt_model and _decrypt_data as of writing only ImageFiles can be correctly decrypted. Furthermore Gor_El is
-    responsible for retrieving and then decrypting data at rest while ensuring that the original data remains secured at rest.  Thus it acts as an interpretor
-    for kryptonian speak.
+    Gor_El is a models.Manager class extension that includes a NeutronMatterCollector object, NeutronCore object,
+    and CryptoTools object it is used to retrieve data from the fortressvault database as well as to answer the
+    questions of Kal-El or simply decrypts the information stored on the server includes two flavors of decryption
+    _decrypt_model and _decrypt_data as of writing only ImageFiles can be correctly decrypted. Furthermore Gor_El is
+    responsible for retrieving and then decrypting data at rest while ensuring that the original data remains secured
+    at rest.  Thus it acts as an interpretor for kryptonian speak.
 
     TODO: Correctly Decrypt MusicFile, VideoFile, and MiscFile using the _decrypt_data function
     """
@@ -268,8 +268,8 @@ class Gor_El(models.Manager):
 
 class Tag(models.Model):
     """
-    Tag is a generic "model" class that contains two charfields:name and slug, the name is for the title of the tag and the slug is for the unique url
-    no inputs
+    Tag is a generic "model" class that contains two charfields:name and slug, the name is for the title of the tag
+    and the slug is for the unique url no inputs
     """
     name = models.CharField(max_length=32, unique=True)
     slug = models.SlugField(max_length=32, unique=True, help_text='A label for URL config.')
@@ -286,8 +286,8 @@ class Tag(models.Model):
 
 class Tasking(models.Model):
     """
-    Tasking is a model class that contains a name slug, asignee, project_codename, description, and assigned_date It is used to keep track of your work
-    no inputs
+    Tasking is a model class that contains a name slug, asignee, project_codename, description, and assigned_date It
+    is used to keep track of your work no inputs
     """
     name = models.CharField(max_length=32, unique=True, db_index=True)
     slug = models.SlugField(max_length=32, unique=True, db_index=True)
@@ -320,8 +320,8 @@ class Tasking(models.Model):
 
 class Startup(models.Model):
     """
-    Startup is  a model class that contains a name, slug, description, founded_date, contact, website, and associated tags. This is used for a startup company
-    no inputs
+    Startup is  a model class that contains a name, slug, description, founded_date, contact, website, and associated
+    tags. This is used for a startup company no inputs
     """
     name = models.CharField(max_length=32, db_index=True)
     slug = models.SlugField(max_length=32, unique=True, help_text='A label for URL config.')
@@ -363,9 +363,8 @@ class NewsLink(models.Model):
 
 class MusicFile(models.Model):
     """
-    MusicFile is a models.Model that contains image_file, data_dek, data_kek, and result_nonce_file: used for encrypting music files and organizing into the
-    music folder
-    no inputs
+    MusicFile is a models.Model that contains image_file, data_dek, data_kek, and result_nonce_file: used for
+    encrypting music files and organizing into the music folder no inputs
     """
     image_file = models.FileField(storage=musicFS, default=None)
     data_dek = models.ForeignKey(DEK, default=1, on_delete=models.CASCADE)
@@ -397,9 +396,8 @@ class MusicFile(models.Model):
 
 class ImageFile(models.Model):
     """
-    ImageFile is a models.Model class that contains a image_file, data_dek, data_kek, and result_nonce_file for encyrpting and organizing common image files
-    common image files will be .png, .tiff, .bmp
-    no inputs
+    ImageFile is a models.Model class that contains a image_file, data_dek, data_kek, and result_nonce_file for
+    encrypting and organizing common image files common image files will be .png, .tiff, .bmp no inputs
     """
     image_file = models.FileField(storage=photoFS, default=None)
     data_dek = models.ManyToManyField(DEK, default=1)
@@ -435,14 +433,10 @@ class ImageFile(models.Model):
     ]
 
 
-
-
-
 class VideoFile(models.Model):
     """
-    VideoFile is a models.Model type class that contains image_file, data_dek, data_kek, and result_nonce_file for encrypting and organizing video files
-    common video formats will be .mpg, .mp4, .avi, .mkv
-    no inputs
+    VideoFile is a models.Model type class that contains image_file, data_dek, data_kek, and result_nonce_file for
+    encrypting and organizing video files common video formats will be .mpg, .mp4, .avi, .mkv no inputs
     """
     image_file = models.FileField(storage=videoFS, default=None)
     data_dek = models.ManyToManyField(DEK, default=1)
@@ -472,14 +466,11 @@ class VideoFile(models.Model):
         return (self.image_file,)
 
 
-
-
-
 class MiscFile(models.Model):
     """
-    MiscFile is a models.Model type class extension that includes an image_file, data_dek, data_kek, and result_nonce_file that is used to encrypt and organize
-    extension file types that haven't been listed in previous classes such as ImageFile, MusicFile, and VideoFile
-    no inputs
+    MiscFile is a models.Model type class extension that includes an image_file, data_dek, data_kek,
+    and result_nonce_file that is used to encrypt and organize extension file types that haven't been listed in
+    previous classes such as ImageFile, MusicFile, and VideoFile no inputs
     """
     image_file = models.FileField(storage=otherFS, default=None)
     data_dek = models.ForeignKey(DEK, default=1, on_delete=models.CASCADE)
@@ -517,7 +508,7 @@ class SecureNote(models.Model):
     to have a data_dek and data_kek already stored in the database in order to begin generating
     it doesn't actually select the data_kek and data_dek, there is a form slot for it but no matter
     what it will randomly generate one in case there is someone trying to reuse keys.  I saw this as a
-    potential security flaw if you could use the same key for the same file.
+    potential security flaw if you could use the same key for a different file.
     """
     slug = models.SlugField(max_length=32, unique=True, db_index=True, help_text='A label for URL config.')
     title = models.CharField(max_length=64, default='Bruh, Change the Title')
