@@ -2,6 +2,7 @@
 DBA 1337_TECH, AUSTIN TEXAS © MAY 2020
 Proof of Concept code, No liabilities or warranties expressed or implied.
 '''
+from datetime import date
 
 from django.db import models
 
@@ -36,7 +37,6 @@ class BasePostManager(models.Manager):
                 self.model,
                 using=self._db,
                 hints=self._hints))
-        # .select_related('author__username'))
 
     def get_by_natural_key(self, pub_date, slug):
         return self.get(
@@ -48,11 +48,11 @@ class SecurePostManager(models.Manager):
 
     def get_queryset(self):
         return PostQueryset(
-            selfmodel,
+            self.model,
             using=self._db,
             hints=self._hints)
 
-    def get_by_natrual_key(self, pub_date, slug):
+    def get_by_natural_key(self, pub_date, slug):
         return self.get(
             pub_date=pub_date,
             slug=slug)
@@ -63,16 +63,12 @@ PostManager = BasePostManager.from_queryset(
 
 
 class SecureDataAtRestPost(SecureNote):
-    # title = models.CharField(max_length=64)
-    # slug = models.SlugField(max_length=64, help_text='A label for URL config', unique_for_month='pub_date')
     author = models.ForeignKey(
         get_user_model(),
         related_name='secureblog_posts',
         on_delete=models.CASCADE,
         default=1)
-    # pub_date = models.DateField('date published', auto_now_add=True)
     tags = models.ManyToManyField(Tag, related_name='secureblog_posts')
-    # startups = models.ManyToManyField(Startup, related_name='blog_posts')
     tasking = models.ManyToManyField(Tasking, related_name='securetasking')
     is_encrypted = models.BooleanField(default=True)
 
@@ -108,6 +104,7 @@ class SecureDataAtRestPost(SecureNote):
                     'month': self.pub_date.month})
 
     def get_archive_year_url(self):
+        print(f'{self.pub_date.year}')
         return reverse(
             'blog_securepost_archive_year',
             kwargs={'year': self.pub_date.year})
@@ -132,10 +129,6 @@ class SecureDataAtRestPost(SecureNote):
             self.slug)
 
     natural_key.dependencies = [
-        # 'organizer.startup',
-        # 'NeutrinoKey.DEK',
-        # 'NeutrinoKey.KEK',
-        # 'organizer.tag',
         'user.user',
     ]
 
@@ -151,12 +144,10 @@ class SecureDataAtRestPost(SecureNote):
         return short
 
 
-'''
-class Post of models.Model type class extension.  includes title, slug, author, text, pub_date, tags, and tasking
-'''
-
-
 class Post(models.Model):
+    """
+    class Post of models.Model type class extension.  includes title, slug, author, text, pub_date, tags, and tasking
+    """
     title = models.CharField(max_length=64)
     slug = models.SlugField(max_length=64, help_text='A label for URL config', unique_for_month='pub_date')
     author = models.ForeignKey(
@@ -167,7 +158,6 @@ class Post(models.Model):
     text = models.TextField()
     pub_date = models.DateField('date published', auto_now_add=True)
     tags = models.ManyToManyField(Tag, related_name='blog_posts')
-    # startups = models.ManyToManyField(Startup, related_name='blog_posts')
     tasking = models.ManyToManyField(Tasking, related_name='tasking')
 
     objects = PostManager()
@@ -226,7 +216,6 @@ class Post(models.Model):
             self.slug)
 
     natural_key.dependencies = [
-        # 'organizer.startup',
         'organizer.tag',
         'user.user',
     ]

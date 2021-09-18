@@ -7,7 +7,9 @@ Proof of Concept code, No liabilities or warranties expressed or implied.
 from django.conf.urls import url
 
 from .views import ( PostCreate,
-    PostDelete, PostDetail, PostList, PostUpdate, PostArchiveYear, PostArchiveMonth, SecurePostList, SecurePostDetail, SecurePostCreate, SecurePostUpdate, SecurePostDelete)
+    PostDelete, PostDetail, PostList, PostUpdate, PostArchiveYear, PostArchiveMonth, SecurePostList, SecurePostDetail,
+                     SecurePostCreate, SecurePostUpdate, SecurePostDelete, SecurePostArchiveYear,
+                     SecurePostArchiveMonth)
 
 urlpatterns = [
     url(r'^Securelist/$',
@@ -65,4 +67,12 @@ urlpatterns = [
         r'update/$',
         PostUpdate.as_view(),
         name='blog_post_update'),
+    url(r'^SecureNote/'
+        r'(?P<year>\d{4})/$',
+        SecurePostArchiveYear.as_view(),
+        name='blog_securepost_archive_year'),
+url(r'^SecureNote/(?P<year>\d{4})/'
+        r'(?P<month>\d{1,2})/$',
+        SecurePostArchiveMonth.as_view(),
+        name='blog_securepost_archive_month'),
 ]

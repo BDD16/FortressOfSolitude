@@ -22,37 +22,43 @@ from .utils import (
 def greeting(request):
     return HttpResponse('Welcome to 1337_Tech Blog')
 
+
 @require_authenticated_permission(
     'Blog.view_post')
 class PostDetail(PostGetMixin, DetailView):
     model = Post
 
+
 class PostUpdate(UpdateView):
     form_class = PostForm
     model = Post
+
 
 class SecurePostUpdate(PostFormValidMixin, UpdateView):
     form_class = SecurePostForm
     model = SecureDataAtRestPost
     template_name = 'Blog/securedataatrestpost_form_update.html'
 
+
 class PostDelete(PostGetMixin, DeleteView):
     model = Post
     success_url = reverse_lazy('blog_post_list')
 
+
 @require_authenticated_permission(
-'Blog.delete_post')
+    'Blog.delete_post')
 class SecurePostDelete(SecurePostGetMixin, DeleteView):
     date_field = 'pub_date'
     model = SecureDataAtRestPost
-    #template_name = 'blog/securedataatrestpost_confirm_delete.html'
+    # template_name = 'blog/securedataatrestpost_confirm_delete.html'
     queryset = (
         SecureDataAtRestPost.objects
-        .select_related('author')
-        #.prefetch_related('startups')
-        .prefetch_related('tags')
+            .select_related('author')
+            # .prefetch_related('startups')
+            .prefetch_related('tags')
     )
     success_url = reverse_lazy('blog_securepost_list')
+
 
 @require_authenticated_permission(
     'Blog.add_post')
@@ -76,16 +82,18 @@ class PostDelete(DateObjectMixin, DeleteView):
     model = Post
     success_url = reverse_lazy('blog_post_list')
 
+
 @require_authenticated_permission(
     'Blog.view_post')
 class PostDetail(DateObjectMixin, DetailView):
     date_field = 'pub_date'
     queryset = (
         Post.objects
-        .select_related('author')
-        #.prefetch_related('startups')
-        .prefetch_related('tags')
+            .select_related('author')
+            # .prefetch_related('startups')
+            .prefetch_related('tags')
     )
+
 
 @require_authenticated_permission(
     'Blog.view_post')
@@ -93,16 +101,17 @@ class SecurePostDetail(DateObjectMixin, DetailView):
     date_field = 'pub_date'
     queryset = (
         SecureDataAtRestPost.objects
-        .select_related('author')
-        #.prefetch_related('startups')
-        .prefetch_related('tags')
+            .select_related('author')
+            # .prefetch_related('startups')
+            .prefetch_related('tags')
     )
+
 
 @require_authenticated_permission(
     'Blog.view_post')
 class PostList(
-        AllowFuturePermissionMixin,
-        ArchiveIndexView):
+    AllowFuturePermissionMixin,
+    ArchiveIndexView):
     allow_empty = True
     context_object_name = 'post_list'
     date_field = 'pub_date'
@@ -115,8 +124,8 @@ class PostList(
 @require_authenticated_permission(
     'Blog.view_post')
 class SecurePostList(
-         AllowFuturePermissionMixin,
-         ArchiveIndexView):
+    AllowFuturePermissionMixin,
+    ArchiveIndexView):
     allow_empty = True
     context_object_name = 'securepost_list'
     date_field = 'pub_date'
@@ -126,30 +135,60 @@ class SecurePostList(
     template_name = 'Blog/secureNote_list.html'
 
 
-#@require_authenticated_permission(
- #   'Blog.change_post')
+# @require_authenticated_permission(
+#   'Blog.change_post')
 class PostUpdate(
-        PostFormValidMixin,
-        DateObjectMixin,
-        UpdateView):
+    PostFormValidMixin,
+    DateObjectMixin,
+    UpdateView):
     date_field = 'pub_date'
     form_class = PostForm
     model = Post
 
+
 @require_authenticated_permission(
     'Blog.view_post')
 class PostArchiveMonth(
-        AllowFuturePermissionMixin,
-        MonthArchiveView):
+    AllowFuturePermissionMixin,
+    MonthArchiveView):
     model = Post
     date_field = 'pub_date'
     month_format = '%m'
 
+
 @require_authenticated_permission(
     'Blog.view_post')
 class PostArchiveYear(
-        AllowFuturePermissionMixin,
-        YearArchiveView):
+    AllowFuturePermissionMixin,
+    YearArchiveView):
     model = Post
     date_field = 'pub_date'
     make_object_list = True
+
+
+@require_authenticated_permission(
+    'Blog.view_post')
+class SecurePostArchiveYear(
+    AllowFuturePermissionMixin,
+    YearArchiveView):
+    allow_empty = True
+    context_object_name = 'securepost_archive_year'
+    date_field = 'pub_date'
+    make_object_list = True
+    model = SecureDataAtRestPost
+    paginate_by = 5
+    template_name = 'Blog/secureNote_archive_year.html'
+
+
+@require_authenticated_permission(
+    'Blog.view_post')
+class SecurePostArchiveMonth(
+    AllowFuturePermissionMixin,
+    MonthArchiveView):
+    model = SecureDataAtRestPost
+    make_object_list = True
+    date_field = 'pub_date'
+    month_format = '%m'
+    paginate_by = 5
+    context_object_name = 'securepost_archive_month'
+    template_name = 'Blog/secureNote_archive_month.html'
