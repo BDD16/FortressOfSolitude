@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 
 from .views import tag_detail, tasking_detail, TagCreate, TaskingCreate, \
     UploadFile, TaskingList, TagList, TaskingUpdate, SuccessView, DownloadImageList, \
-    DownloadTheGoodsView  # , task_status
+    DownloadTheGoodsView, DownloadMusicList, DownloadTheMusicalGoodsView  # , task_status
 
 urlpatterns = [
                   url(r'^$',
@@ -46,8 +46,14 @@ urlpatterns = [
                   url(r'^download/$',
                       login_required(DownloadImageList.as_view()),
                       name='organizer_download_pull'),
+                  url(r'^download/music/$',
+                        login_required(DownloadMusicList.as_view()),
+                        name='organizer_music_download_pull'),
                   url('^download/media/photos/(?P<pk>\d+)$',
                       login_required(DownloadTheGoodsView.as_view()),
+                      {'document_root': settings.MEDIA_ROOT}),
+                  url('^download/music/media/music/(?P<pk>\d+)$',
+                      login_required(DownloadTheMusicalGoodsView.as_view()),
                       {'document_root': settings.MEDIA_ROOT}),
                   # re_path(r'^download/(?P<path>.*)$', serve, { 'document_root': settings.STATIC_ROOT}),
                   # url(r'^(?P<task_id>[\w-]+)/$', task_status, name='task_status')

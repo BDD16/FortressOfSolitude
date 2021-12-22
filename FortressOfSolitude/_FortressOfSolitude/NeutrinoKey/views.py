@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import permission_required
 from django.utils.decorators import method_decorator
 from django.views.generic import (ListView)
 
+from decorators import require_authenticated_permission
 from .forms import DownloadFileForm
 
 

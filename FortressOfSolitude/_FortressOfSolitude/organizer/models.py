@@ -6,6 +6,7 @@ Proof of Concept code, No liabilities or warranties expressed or implied.
 import os
 from base64 import (b64encode, b64decode)
 from datetime import datetime
+from ctypes import Union
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
@@ -123,7 +124,7 @@ class Librarian(models.Manager):
 
     def _encrypt_data(
             self, password, **kwargs):
-        modeldata = kwargs.pop('image_file', False)
+        model_data: Union[ImageFile, MusicFile, MiscFile] = kwargs.pop('image_file', False)
 
         req = kwargs.pop('request', False)
         modeldata = req.FILES['file_field'].read()
@@ -138,23 +139,49 @@ class Librarian(models.Manager):
         encrypted_data = Librarian.crypt.AesEncryptEAX(modeldata, DEK.crypto.Sha256(key))
         file_data = ContentFile(encrypted_data)
         filename = req.FILES['file_field'].name
-        # THIS IS THE HACKY CODE BELOW
-        fd = open('/' + os.path.join(photoFS.base_location, filename), 'w+')
-        fd.close()
-        fd = open('/' + os.path.join(photoFS.base_location, filename), 'wb')
-        # END OF HACKY CODE
-        fd.write(encrypted_data)
-        fd.close()
+
         data = self.model(
             image_file=file_data,
             **kwargs)
         data.image_file.name = filename
+        print(f"data.image_file.name {model_data.image_file.name}")
         data.result_nonce_file = nonce
         data.save()
-        data.data_kek.add(data_kek)
-        data.data_dek.add(data_dek)
+        data.data_kek = data_kek
+        data.data_dek = data_dek
         print("ENCRYPTED AND SAVED DATA")
         data.save()
+
+        # *** THIS IS THE HACKY CODE BELOW, change to STATIC location when able ***
+        if isinstance(model_data, ImageFile):
+            fd = open('/' + os.path.join(photoFS.base_location, str(data)), 'w+')
+            fd.close()
+            fd = open('/' + os.path.join(photoFS.base_location, str(data)), 'wb')
+
+        elif isinstance(model_data, MusicFile):
+            fd = open('/' + os.path.join(musicFS.base_location, str(data)), 'w+')
+            fd.close()
+            fd = open('/' + os.path.join(musicFS.base_location, str(data)), 'wb')
+
+        elif isinstance(model_data, VideoFile):
+            fd = open('/' + os.path.join(videoFS.base_location, str(data)), 'w+')
+            fd.close()
+            fd = open('/' + os.path.join(videoFS.base_location, str(data)), 'wb')
+
+        elif isinstance(model_data, MiscFile):
+            fd = open('/' + os.path.join(otherFS.base_location, str(data)), 'w+')
+            fd.close()
+            fd = open('/' + os.path.join(otherFS.base_location, str(data)), 'wb')
+
+        else:
+            print("something went horrible and terribly wrong unable to determine where to encrypt data")
+            return None
+
+        # *** end of hacky code ***
+
+        # END OF HACKY CODE
+        fd.write(encrypted_data)
+        fd.close()
         return data
 
 
@@ -223,9 +250,9 @@ class Gor_El(models.Manager):
         req = kwargs.pop('request', False)
         if str(f.image_file).lower().endswith(('.png', '.jpg', '.jpeg', '.tiff')):
             encryptedFile = open('/' + os.path.join(photoFS.base_location, str(f.image_file.name)), 'rb').read()
-            data_kek = f.data_kek
+            data_kek: KEK = f.data_kek
 
-            data_dek = f.data_dek
+            data_dek: DEK = f.data_dek
 
             # We've got the dek and kek attached to the image file so now to do the decryption
             if isinstance(f.result_nonce_file, str):
@@ -241,12 +268,13 @@ class Gor_El(models.Manager):
             self.crypt.nonce = b64decode(wrapped_nonce)
             plaintext = self.crypt.AesDecryptEAX(encryptedFile, CryptoTools().Sha256(keyToFile))
             return plaintext
-        elif str(f).lower().endswith(('.mp3', '.m4p', '.flac', '.aac')):
-            print("DEBUG>PATH:" + str(os.path.join(photoFS.base_location, str(f.image_file.name))))
-            encryptedFile = open('/' + os.path.join(musicFS.base_location, str(f.image_file.name)), 'rb').read()
-            data_kek = f.data_kek
 
-            data_dek = f.data_dek
+        elif str(f.image_file).lower().endswith(('.mp3', '.m4p', '.m4a', '.flac', '.aac')):
+            print("DEBUG>PATH:" + str(os.path.join(musicFS.base_location, str(f.image_file.name))))
+            encryptedFile = open('/' + os.path.join(musicFS.base_location, str(f.image_file.name)), 'rb').read()
+            data_kek: KEK = f.data_kek
+
+            data_dek: DEK = f.data_dek
 
             # We've got the dek and kek attached to the image file so now to do the decryption
             if isinstance(f.result_nonce_file, str):
@@ -255,9 +283,9 @@ class Gor_El(models.Manager):
                 wrapped_nonce = wrapped_nonce + b'=' * (len(wrapped_nonce) % 4)
                 self.crypt.nonce = b64decode(wrapped_nonce)
             else:
-                self.crypt.nonce = b64decode(f.data_dek.get().result_nonce_file)
+                self.crypt.nonce = b64decode(f.data_dek.result_nonce_file)
 
-            keyToFile = data_dek.get().unwrap_key(data_kek.get(), password.encode())
+            keyToFile = data_dek.unwrap_key(data_kek, password.encode())
 
             self.crypt.nonce = b64decode(wrapped_nonce)
             plaintext = self.crypt.AesDecryptEAX(encryptedFile, CryptoTools().Sha256(keyToFile))
@@ -380,7 +408,7 @@ class MusicFile(models.Model):
         return str(self.image_file)
 
     def get_absolute_url(self):
-        return reverse('organizer_download_pull', kwargs={
+        return reverse('organizer_music_download_pull', kwargs={
             'image_file': self.image_file})  # Need to test if actually works for download or if the function needs to decrypt
 
     def get_update_url(self):
@@ -452,7 +480,7 @@ class VideoFile(models.Model):
         return str(self.image_file)
 
     def get_absolute_url(self):
-        return reverse('organizer_download_pull', kwargs={'image_file': str(
+        return reverse('organizer_video_download_pull', kwargs={'image_file': str(
             self.image_file)})  # Need to test if actually works for download or if the function needs to decrypt
 
     def get_update_url(self):
@@ -486,7 +514,7 @@ class MiscFile(models.Model):
         return str(self.image_file)
 
     def get_absolute_url(self):
-        return reverse('organizer_download_pull', kwargs={
+        return reverse('organizer_misc_download_pull', kwargs={
             'image_file': self.image_file})  # Need to test if actually works for download or if the function needs to decrypt
 
     def get_update_url(self):
