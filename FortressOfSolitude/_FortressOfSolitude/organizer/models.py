@@ -194,7 +194,7 @@ class Gor_El(models.Manager):
     responsible for retrieving and then decrypting data at rest while ensuring that the original data remains secured
     at rest.  Thus it acts as an interpretor for kryptonian speak.
 
-    TODO: Correctly Decrypt MusicFile, VideoFile, and MiscFile using the _decrypt_data function
+    TODO: Correctly Decrypt VideoFile, and MiscFile using the _decrypt_data function
     """
     crypt = CryptoTools()
 
@@ -444,12 +444,12 @@ class ImageFile(models.Model):
         if str(self.image_file) != '':
             print(dir(self))
             return reverse('organizer_download_pull', kwargs={
-                'image_file': self.image_file})  # Need to test if actually works for download or if the function needs to decrypt
+                'image_file': self.image_file})
 
     def get_update_url(self):
         if str(self.image_file) != '':
             return reverse('organizer_upload_create', kwargs={
-                'image_file': self.image_file})  # Need to test if actually works for upload or if the function needs to encrypt
+                'image_file': self.image_file})
 
     def natural_key(self):
         return (self.image_file,)
@@ -485,7 +485,7 @@ class VideoFile(models.Model):
 
     def get_update_url(self):
         return reverse('organizer_upload_create', kwargs={
-            'image_file': self.image_file})  # Need to test if actually works for upload or if the function needs to encrypt
+            'image_file': self.image_file})
 
     def natural_key(self):
         return (self.image_file,)
@@ -515,11 +515,11 @@ class MiscFile(models.Model):
 
     def get_absolute_url(self):
         return reverse('organizer_misc_download_pull', kwargs={
-            'image_file': self.image_file})  # Need to test if actually works for download or if the function needs to decrypt
+            'image_file': self.image_file})
 
     def get_update_url(self):
         return reverse('organizer_upload_create', kwargs={
-            'image_file': self.image_file})  # Need to test if actually works for upload or if the function needs to encrypt
+            'image_file': self.image_file})
 
     def natural_key(self):
         return (self.image_file,)
