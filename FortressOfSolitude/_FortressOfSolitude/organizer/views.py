@@ -382,19 +382,10 @@ def handle_downloaded_file(f, request, i=0, total_work=100):
 
         # current_task.update_state(state='PROGRESS',
         #                          meta={'current': i, 'total': total_work})
-        print(str(request.user.password))
+
         ans = AskMeAQuestionAndIShallAnswer._decrypt_data(str(request.user.password), request=request, image_file=f)
 
         print("This is the answer to the question you asked: ")
         print(ans)
         return ans
-# '''
-# def task_status(request, task_id):
-#    result = AsyncResult(task_id)
 
-#    response_data = {
-#        'state' : result.state,
-#        'details' : result.info,
-#        }
-#    return HttpResponse(json.dumps(response_data), content_type='application/json')
-# '''

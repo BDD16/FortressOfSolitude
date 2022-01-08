@@ -16,11 +16,11 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background:  #CC0000 !important;
+            background:  #FFFFFF !important;
             overflow: hidden;
             margin: 0;
             padding: 0;
-            border: 4px solid darkred;
+            border: 4px solid #0FFFFF;
             border-radius: 4px;
         }
         nav a {
@@ -41,7 +41,7 @@
             right: 0;
             height: 100%;
             width: 121px;
-            background:  #276CE8 !important;
+            background:  linear-gradient(to top,#276CE8, white) !important;
             overflow: hidden;
             margin: 40px 0px 0px 0px;
             padding: 0px;
@@ -66,8 +66,8 @@
             position: fixed;
             bottom: 0;
             width: 100%;
-            background-color: yellow;
-            border: 4px solid #CCCC00;
+            background-color: cornflowerblue;
+            border: 4px solid forestgreen;
             border-radius: 5px;
 
         }
@@ -95,13 +95,13 @@
                             <img src="{% static "img/fortressOfSolitude.png" %}" alt="Do_You_Have_The_Strength?" width="121" height="75" />
                         </a>
                         <a class="navbar-item" text-align="center" href="{% url 'organizer_upload_create' %}">
-                           <h1 align="center"><font color="white">Fortress of Solitude</font></h1>
+                           <h1 align="center"><font color="grey">Fortress of Solitude</font></h1>
                         </a>
 
-                       <a href="{% url 'organizer_tag_list' %}"><h1><font color="white">    TagList   </font> </h1></a>
+                       <a href="{% url 'organizer_tag_list' %}"><h1><font color="grey">    Malware   </font> </h1></a>
 
-                        <a href="{% url 'organizer_tasking_list' %}"><h1><font color="white">   TaskList   </font> </h1></a>
-                         <a href="{% url 'blog_post_list' %}"><h1><font color="white">   Notes   </font> </h1></a>
+                        <a href="{% url 'organizer_tasking_list' %}"><h1><font color="grey">   Enclosed   </font> </h1></a>
+                         <a href="{% url 'blog_post_list' %}"><h1><font color="grey">   Enter At Your Own Risk   </font> </h1></a>
                 </nav>
             </div>
 
@@ -130,6 +130,31 @@
           </div>
         </div>
 
+        <div class="bg">
+  <div class="mountain">
+    <div class="mountain-top">
+      <div class="mountain-cap-1"></div>
+      <div class="mountain-cap-2"></div>
+      <div class="mountain-cap-3"></div>
+    </div>
+  </div>
+  <div class="mountain-two">
+    <div class="mountain-top">
+      <div class="mountain-cap-1"></div>
+      <div class="mountain-cap-2"></div>
+      <div class="mountain-cap-3"></div>
+    </div>
+  </div>
+   <div class="mountain-three">
+    <div class="mountain-top">
+      <div class="mountain-cap-1"></div>
+      <div class="mountain-cap-2"></div>
+      <div class="mountain-cap-3"></div>
+    </div>
+  </div>
+  <div class="cloud"></div>
+</div>
+
         <div class="player" >
 	    <canvas></canvas>
 		<div class="song">
@@ -145,7 +170,7 @@
 		<div class="soundControl"></div>
 		<div class="time">00:00</div>
 	</div>
-   <script>const music_file = "{% static 'img/Get_Free.mp3' %}";</script>
+   <script>const music_file = "{% static 'img/Get_Back.m4a' %}";</script>
     <script id="rendered-js" src="{% static 'js/music_player.js' %}"></script>
     <div ><!-- container-->
         <footer class="bottomFooter" style="overflow:hidden;" >
@@ -158,7 +183,7 @@
             <p align="center" style="z-index:1;">
                 &copy; 2020
                 <a href="TBD.com"> LEET_TECH </a>
-                <img src="{% static 'img/placeholder.png' %}" width="80" height="50" />
+                <img src="{% static 'img/riddler.jpg' %}" width="80" height="50" style="border-radius: 10px;" />
             </p>
 
         </footer>
