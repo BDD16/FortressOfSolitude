@@ -8,7 +8,7 @@ I'm trying to figure out what will be a good road map to support the overall arc
 Key Manager Practices for Organizations (https://www.nist.gov/publications/recommendation-key-management-part-2-150-best-practices-key-management-organizations)
 and does not meet all the requirments due to the implementation is currently creating a new KEK->DEK->256BitKey for every file and Secure Note that is marked for encryption.
 
-
+<pre>
 +-+-+-+-+-+-+-+-
 | DEK            |------------------------Generated_KEY (256 bits)
 +-+-+-+-+-+-+-+- |
@@ -20,7 +20,7 @@ and does not meet all the requirments due to the implementation is currently cre
 +-+-+-+-+-+-+-+- |
 | SALT           |-----|
 +-+-+-+-+-+-+-+-
-
+</pre>
 Where the SALT is a random number that will be preprended to the KEK (Key Encryption Key) which is the derived DEK (Data Encryption Key)
 
 Therefore Generated_Key = SHA256(SALT + KEK)
@@ -56,7 +56,10 @@ This is a work in progress but here are the steps so far:
     This will open a default server at http://127.0.0.1:8000
     
     To get to most of the features such as the encrypted Notes (Secure Notes) you will need to manually traverse to http://127.0.0.1:8000/blog
-    
+<img width="1267" alt="Screen Shot 2022-01-08 at 11 41 56 AM" src="https://user-images.githubusercontent.com/33583381/148665258-507d1f55-4feb-443b-a3e5-6e8b910a61cb.png">
+
+
+
 ![Not_So_Landing_Page](https://user-images.githubusercontent.com/33583381/127745834-4f2714fb-8fbc-4955-8b32-6a0f14bc6f6d.PNG)
 
     Secure Notes after creating a tag, tasking, and uploading a file successfully
