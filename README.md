@@ -56,11 +56,8 @@ This is a work in progress but here are the steps so far:
     This will open a default server at http://127.0.0.1:8000
     
     To get to most of the features such as the encrypted Notes (Secure Notes) you will need to manually traverse to http://127.0.0.1:8000/blog
-<img width="1267" alt="Screen Shot 2022-01-08 at 11 41 56 AM" src="https://user-images.githubusercontent.com/33583381/148665258-507d1f55-4feb-443b-a3e5-6e8b910a61cb.png">
 
-
-
-![Not_So_Landing_Page](https://user-images.githubusercontent.com/33583381/127745834-4f2714fb-8fbc-4955-8b32-6a0f14bc6f6d.PNG)
+![purple_lambo_lurkin](https://user-images.githubusercontent.com/33583381/169671631-b4294ecd-214d-4bfd-bce6-081f93f5bf58.PNG)
 
     Secure Notes after creating a tag, tasking, and uploading a file successfully
     
