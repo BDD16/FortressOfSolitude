@@ -116,7 +116,7 @@
 .CuttingEdge {
     z-index: -15;
     height: 100%;
-    background-color: #0060AA;
+    background-color: #a43d9a;
     margin:0;
     position: relative;
 }
@@ -127,7 +127,7 @@
     position: absolute;
     top: 0; right: 0;
     border-top: 800px solid #69BB01;
-    border-left: 500px solid #0060AA;
+    border-left: 500px solid #a43d9a;
     width: 0;
 }
 
@@ -432,21 +432,22 @@ body {
 
 .player .song {
     font-family: Roboto, sans-serif;
-    color: #FE4365;
+    color: #47ea3f;
     position: absolute;
-    top: 225px;
+    font-weight: bold;
+    top: 200px;
     left: 0;
     width: 100%;
     text-align: center;
 }
 
 .player .song .artist {
-    font-size: 22px;
-    margin-bottom: 5px;
+    font-size: 35px;
+    margin-bottom: 8px;
 }
 
 .player .song .name {
-    font-size: 18px;
+    font-size: 29px;
 }
 
 .player .soundControl {
@@ -481,7 +482,7 @@ body {
 
 .bg{
 	  overflow:hidden;
-		background:#b4ddf0;
+		background:-moz-radial-gradient(#a43d9a, #561f51);
 		position: absolute;
 		top:0;
 		left:0;
@@ -531,7 +532,7 @@ body {
   position: absolute;
   width: 70px;
 	height: 30px;
-	background: #fff;
+	background: #ef58e0;
 	-webkit-border-radius: 100px / 50px;
 	border-radius: 100px / 50px;
 }
